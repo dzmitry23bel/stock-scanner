@@ -52,7 +52,7 @@ for the top setups.
 ```bash
 python day_trade.py                              # scan tickers.txt
 python day_trade.py MRVL AAPL CRDO
-python day_trade.py --catalysts catalysts.json --top 20 --leverage 5
+python day_trade.py --catalysts catalysts.json --top 20
 ```
 
 VWAP, opening-range and RVOL are estimated from Yahoo Finance 5-minute bars

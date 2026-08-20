@@ -35,7 +35,6 @@ try:
 except ImportError:
     HAS_RICH = False
 
-DEFAULT_LEVERAGE = 5
 DIRECTION_EMOJI = {"LONG": "🟢", "SHORT": "🔴", "WAIT": "🟡"}
 
 
@@ -212,7 +211,7 @@ def fmt(value: float, suffix: str = "") -> str:
     return "n/a" if value != value else f"{value:+.2f}{suffix}"
 
 
-def build_trade_plan(row: dict, leverage: int) -> Optional[dict]:
+def build_trade_plan(row: dict) -> Optional[dict]:
     price, atr = row["price"], row["atr"]
     if atr != atr or atr <= 0 or row["direction"] == "WAIT":
         return None
@@ -240,31 +239,47 @@ def build_trade_plan(row: dict, leverage: int) -> Optional[dict]:
         "tp1": tp1,
         "tp2": tp2,
         "rr": rr,
-        "leverage": leverage,
     }
 
 
-def print_trade_plan(row: dict, plan: dict) -> None:
-    breakout_ref = "previous 15/30-min high" if row["direction"] == "LONG" else "previous 15/30-min low"
-    print(f"\n{row['ticker']}")
-    print(f"Direction: {row['direction']}")
-    print(f"Day Score: {row['day_score']}")
-    print(f"\nEntry:\n${plan['entry_low']:.2f} - ${plan['entry_high']:.2f}")
-    print(
-        "\nConfirmation:\n"
-        f"Price {'>' if row['direction'] == 'LONG' else '<'} VWAP\n"
-        "AND\n"
-        f"break {breakout_ref}\n"
-        "AND\n"
-        "RVOL > 1.5"
-    )
-    print(f"\nStop:\n${plan['stop']:.2f}")
-    print(f"\nTP1:\n${plan['tp1']:.2f}")
-    print(f"\nTP2:\n${plan['tp2']:.2f}")
-    print(f"\nRisk/Reward:\n1 : {plan['rr']:.1f}" if plan["rr"] == plan["rr"] else "\nRisk/Reward:\nn/a")
-    print(f"\nSetup:\n{'BREAKOUT / VWAP RECLAIM' if row['direction'] == 'LONG' else 'BREAKDOWN / VWAP LOSS'}")
-    print(f"\nLeverage:\nx{plan['leverage']}")
-    print("\nStatus:\nWAIT FOR CONFIRMATION")
+def print_trade_plans(rows_with_plans: list[tuple[dict, dict]]) -> None:
+    if not rows_with_plans:
+        return
+
+    if HAS_RICH:
+        console = Console(width=140)
+        table = Table(title="Trade Plans")
+        for col in ("Symbol", "Dir", "Score", "Entry", "Stop", "TP1", "TP2", "R:R", "Setup", "Status"):
+            table.add_column(col, justify="right" if col in ("Score", "Entry", "Stop", "TP1", "TP2", "R:R") else "left")
+        for row, plan in rows_with_plans:
+            setup = "BREAKOUT / VWAP RECLAIM" if row["direction"] == "LONG" else "BREAKDOWN / VWAP LOSS"
+            table.add_row(
+                row["ticker"],
+                f"{DIRECTION_EMOJI[row['direction']]} {row['direction']}",
+                str(row["day_score"]),
+                f"${plan['entry_low']:.2f}-${plan['entry_high']:.2f}",
+                f"${plan['stop']:.2f}",
+                f"${plan['tp1']:.2f}",
+                f"${plan['tp2']:.2f}",
+                f"1:{plan['rr']:.1f}" if plan["rr"] == plan["rr"] else "n/a",
+                setup,
+                "WAIT FOR CONFIRMATION",
+            )
+        console.print(table)
+    else:
+        header = (
+            f"{'Symbol':<8}{'Dir':<7}{'Score':>6}  {'Entry':<18}{'Stop':>10}{'TP1':>10}{'TP2':>10}{'R:R':>7}  Setup"
+        )
+        print(header)
+        print("-" * len(header))
+        for row, plan in rows_with_plans:
+            setup = "BREAKOUT/VWAP RECLAIM" if row["direction"] == "LONG" else "BREAKDOWN/VWAP LOSS"
+            entry_str = f"${plan['entry_low']:.2f}-${plan['entry_high']:.2f}"
+            rr_str = f"1:{plan['rr']:.1f}" if plan["rr"] == plan["rr"] else "n/a"
+            print(
+                f"{row['ticker']:<8}{row['direction']:<7}{row['day_score']:>6}  {entry_str:<18}"
+                f"${plan['stop']:>9.2f}${plan['tp1']:>9.2f}${plan['tp2']:>9.2f}{rr_str:>7}  {setup}"
+            )
 
 
 DO_NOT_ENTER = """
@@ -277,7 +292,7 @@ DO NOT ENTER IF:
 """
 
 
-def print_report(rows: list[dict], top: int, leverage: int) -> None:
+def print_report(rows: list[dict], top: int) -> None:
     rows = sorted(rows, key=lambda r: r["day_score"], reverse=True)
 
     if HAS_RICH:
@@ -325,11 +340,9 @@ def print_report(rows: list[dict], top: int, leverage: int) -> None:
             print(f"{r['ticker']:<8}{r['day_score']:>4}/100   {DIRECTION_EMOJI['SHORT']} SHORT")
 
     print("\nTRADE PLANS")
-    print("=" * 40)
-    for r in longs + shorts:
-        plan = build_trade_plan(r, leverage)
-        if plan:
-            print_trade_plan(r, plan)
+    print("-" * 40)
+    plans = [(r, plan) for r in longs + shorts for plan in [build_trade_plan(r)] if plan]
+    print_trade_plans(plans)
 
     print(DO_NOT_ENTER)
 
@@ -340,7 +353,6 @@ def main() -> None:
     parser.add_argument("--tickers-file", help="Path to a newline-separated ticker list (default: tickers.txt)")
     parser.add_argument("--catalysts", help="Path to a JSON file mapping ticker -> days until next catalyst")
     parser.add_argument("--top", type=int, default=20, help="How many LONG/SHORT setups to build trade plans for")
-    parser.add_argument("--leverage", type=int, default=DEFAULT_LEVERAGE, help="Leverage multiplier shown in the trade plan")
     args = parser.parse_args()
 
     tickers = load_tickers(args)
@@ -357,7 +369,7 @@ def main() -> None:
     if not rows:
         sys.exit("No tickers could be analyzed.")
 
-    print_report(rows, top=args.top, leverage=args.leverage)
+    print_report(rows, top=args.top)
 
 
 if __name__ == "__main__":
