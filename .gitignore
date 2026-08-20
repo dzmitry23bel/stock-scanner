@@ -1,0 +1,5 @@
+.venv/
+__pycache__/
+*.pyc
+catalysts.json
+.DS_Store

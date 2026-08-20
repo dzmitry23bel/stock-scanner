@@ -1,0 +1,5 @@
+{
+  "_comment": "Manually maintained: ticker -> days until next known catalyst (earnings, FDA/PDUFA date, clinical readout). Copy to catalysts.json and edit.",
+  "CGEM": 21,
+  "SRRK": 7
+}
