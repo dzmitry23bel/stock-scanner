@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Optional
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_TICKERS_FILE = PROJECT_ROOT / "tickers.txt"
+DEFAULT_TICKERS_FILE = PROJECT_ROOT / "data" / "tickers.txt"
 
 
 def load_tickers(args: Namespace) -> list[str]:

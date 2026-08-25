@@ -6,9 +6,9 @@ consolidates results, identifies consensus signals (high-conviction setups),
 and generates a comprehensive master report.
 
 Usage:
-    python run_all_scanners.py                      # Full report, top 50 each
-    python run_all_scanners.py --top 30             # Top 30 for each
-    python run_all_scanners.py --catalysts catalysts.json
+    python scripts/run_all_scanners.py                      # Full report, top 50 each
+    python scripts/run_all_scanners.py --top 30             # Top 30 for each
+    python scripts/run_all_scanners.py --catalysts catalysts.json
 """
 from __future__ import annotations
 
@@ -20,8 +20,9 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-# Add current directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent))
+# Add project root to path for package imports
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
 
 try:
     from rich.console import Console
@@ -32,8 +33,8 @@ try:
 except ImportError:
     HAS_RICH = False
 
-DEFAULT_SCANNERS_DIR = Path(__file__).parent
-DEFAULT_REPORT_DIR = DEFAULT_SCANNERS_DIR / "scan_results" / "master"
+DEFAULT_SCANNERS_DIR = PROJECT_ROOT
+DEFAULT_REPORT_DIR = PROJECT_ROOT / "reports" / "master"
 
 
 def format_level(value: Optional[float]) -> str:
@@ -406,7 +407,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="Master Scanner - All three scanners unified",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="Examples:\n  python run_all_scanners.py\n  python run_all_scanners.py --top 30\n"
+        epilog="Examples:\n  python scripts/run_all_scanners.py\n  python scripts/run_all_scanners.py --top 30\n"
     )
     
     parser.add_argument("--top", type=int, default=50, help="Top N results per scanner")

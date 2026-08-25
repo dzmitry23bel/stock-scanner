@@ -190,11 +190,11 @@ These tickers get bonus points (capped at +20).
 
 ```bash
 # One-time setup
-cp com.user.knife-catch-scanner.plist ~/Library/LaunchAgents/
-launchctl load ~/Library/LaunchAgents/com.user.knife-catch-scanner.plist
+cp config/com.user.knife-catch-scanner.plist ~/Library/LaunchAgents/
+launchctl load ~/Library/LaunchAgents/config/com.user.knife-catch-scanner.plist
 
 # Scanner runs automatically at 4:10 PM ET every weekday
-# Results saved to: scan_results/scan_YYYYMMDD_HHMMSS.txt
+# Results saved to: reports/daily/scan_YYYYMMDD_HHMMSS.txt
 ```
 
 ## Step-by-Step: Trading a Knife Catch Signal
@@ -310,7 +310,7 @@ Knife catches work best in correcting markets. In a bear market collapse, they f
 ## Optimization Ideas
 
 ### Track Performance
-Modify `run_daily_scan.py` to log results to CSV. Then monthly:
+Modify `scripts/run_daily_scan.py` to log results to CSV. Then monthly:
 - Win rate?
 - Average R/R?
 - Which factors matter most?
@@ -336,12 +336,12 @@ Start with default weights, then adjust based on live results:
 | File | Purpose |
 |------|---------|
 | `knife_catch_scanner.py` | Main scanner (run this) |
-| `run_daily_scan.py` | Automation wrapper |
-| `com.user.knife-catch-scanner.plist` | macOS launchd config (optional) |
+| `scripts/run_daily_scan.py` | Automation wrapper |
+| `../config/com.user.knife-catch-scanner.plist` | macOS launchd config (optional) |
 | `KNIFE_CATCH_README.md` | Technical documentation |
-| `tickers.txt` | List of 142 tickers to scan |
-| `catalysts.example.json` | Template for catalyst bonuses |
-| `scan_results/` | Auto-created directory for logs |
+| `data/tickers.txt` | List of 142 tickers to scan |
+| `../config/catalysts.example.json` | Template for catalyst bonuses |
+| `../reports/daily/` | Auto-created directory for logs |
 
 ## Troubleshooting
 

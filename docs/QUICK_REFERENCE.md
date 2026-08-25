@@ -7,10 +7,10 @@
 | Scan all 142 tickers | `python knife_catch_scanner.py --top 50` |
 | Scan specific tickers | `python knife_catch_scanner.py MRVL CRDO CGEM` |
 | With catalysts bonus | `python knife_catch_scanner.py --catalysts catalysts.json` |
-| Set up daily automation | `cp com.user.knife-catch-scanner.plist ~/Library/LaunchAgents/ && launchctl load ~/Library/LaunchAgents/com.user.knife-catch-scanner.plist` |
+| Set up daily automation | `cp config/com.user.knife-catch-scanner.plist ~/Library/LaunchAgents/ && launchctl load ~/Library/LaunchAgents/config/com.user.knife-catch-scanner.plist` |
 | Check automation status | `launchctl list \| grep knife-catch` |
-| View logs | `tail -f scan_results/scanner.log` |
-| Unload automation | `launchctl unload ~/Library/LaunchAgents/com.user.knife-catch-scanner.plist` |
+| View logs | `tail -f reports/daily/scanner.log` |
+| Unload automation | `launchctl unload ~/Library/LaunchAgents/config/com.user.knife-catch-scanner.plist` |
 
 ## Scoring Summary
 
@@ -171,14 +171,14 @@ Monthly review:
 ```
 stock-scanner/
 ├── knife_catch_scanner.py          ← Main scanner
-├── run_daily_scan.py               ← Automation wrapper
-├── com.user.knife-catch-scanner.plist ← macOS scheduler
-├── tickers.txt                     ← Your 142 tickers
-├── catalysts.example.json          ← Optional catalyst bonuses
+├── scripts/run_daily_scan.py               ← Automation wrapper
+├── config/com.user.knife-catch-scanner.plist ← macOS scheduler
+├── data/tickers.txt                     ← Your 142 tickers
+├── config/catalysts.example.json          ← Optional catalyst bonuses
 ├── requirements.txt                ← Dependencies
-├── KNIFE_CATCH_README.md           ← Technical details
-├── KNIFE_CATCH_GUIDE.md            ← Full user guide
-├── scan_results/                   ← Auto-created
+├── docs/KNIFE_CATCH_README.md           ← Technical details
+├── docs/KNIFE_CATCH_GUIDE.md            ← Full user guide
+├── reports/daily/                   ← Auto-created
 │   ├── knife_catch_history.csv     ← Signal log
 │   ├── scan_YYYYMMDD_HHMMSS.txt    ← Detailed results
 │   ├── scanner.log                 ← Daily log
@@ -188,11 +188,11 @@ stock-scanner/
 
 ## Need Help?
 
-- **How to enter a trade?** → See "Step-by-Step" in KNIFE_CATCH_GUIDE.md
+- **How to enter a trade?** → See "Step-by-Step" in docs/KNIFE_CATCH_GUIDE.md
 - **Why is score low?** → Check which factors failed in detailed output
 - **How to adjust scoring?** → Edit weights in knife_catch_scanner.py (search "Factor")
 - **Automation not working?** → `launchctl load -w` to debug, check .plist syntax
-- **Tickers missing?** → Add to tickers.txt, one per line
+- **Tickers missing?** → Add to data/tickers.txt, one per line
 
 ---
 

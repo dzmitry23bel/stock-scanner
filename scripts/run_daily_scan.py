@@ -5,7 +5,7 @@ Runs the scanner daily and logs results to CSV for tracking accuracy
 and performance over time.
 
 Usage:
-    python run_daily_scan.py                    # Single run
+    python scripts/run_daily_scan.py                    # Single run
     
     # Cron: Run daily at market close (4 PM EST = 8 PM UTC, 9 PM EDT)
     0 21 * * 1-5 cd /path/to/stock-scanner && /usr/bin/python3 run_daily_scan.py
@@ -21,8 +21,8 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-DEFAULT_SCANNER_DIR = Path(__file__).parent
-RESULTS_DIR = DEFAULT_SCANNER_DIR / "scan_results"
+DEFAULT_SCANNER_DIR = Path(__file__).resolve().parent.parent
+RESULTS_DIR = DEFAULT_SCANNER_DIR / "reports" / "daily"
 RESULTS_CSV = RESULTS_DIR / "knife_catch_history.csv"
 
 
@@ -116,7 +116,7 @@ def main():
     print(f"{'=' * 80}\n")
     
     # Check if catalysts file exists
-    catalysts_file = DEFAULT_SCANNER_DIR / "catalysts.json"
+    catalysts_file = DEFAULT_SCANNER_DIR / "config" / "catalysts.json"
     catalysts_arg = str(catalysts_file) if catalysts_file.exists() else None
     
     # Run scanner

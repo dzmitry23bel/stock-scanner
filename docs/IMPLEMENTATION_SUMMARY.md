@@ -21,7 +21,7 @@ python knife_catch_scanner.py MRVL CRDO GOOGL       # Specific tickers
 python knife_catch_scanner.py --catalysts catalysts.json  # With bonuses
 ```
 
-#### 2. **run_daily_scan.py** (Automation)
+#### 2. **scripts/run_daily_scan.py** (Automation)
 - Wrapper script for daily automated scanning
 - Logs results to CSV for historical tracking
 - Saves detailed reports to timestamped files
@@ -30,25 +30,25 @@ python knife_catch_scanner.py --catalysts catalysts.json  # With bonuses
 
 **Usage:**
 ```bash
-python run_daily_scan.py                # One-time run
+python scripts/run_daily_scan.py                # One-time run
 # Then set up launchd (see below)
 ```
 
-#### 3. **com.user.knife-catch-scanner.plist** (macOS Scheduler)
+#### 3. **config/com.user.knife-catch-scanner.plist** (macOS Scheduler)
 - launchd configuration for automatic daily scanning
 - Runs at 4:10 PM ET (20:10 UTC) weekdays
-- Logs to `scan_results/scanner.log`
+- Logs to `../reports/daily/scanner.log`
 - Ready to deploy
 
 **Setup:**
 ```bash
-cp com.user.knife-catch-scanner.plist ~/Library/LaunchAgents/
-launchctl load ~/Library/LaunchAgents/com.user.knife-catch-scanner.plist
+cp config/com.user.knife-catch-scanner.plist ~/Library/LaunchAgents/
+launchctl load ~/Library/LaunchAgents/config/com.user.knife-catch-scanner.plist
 ```
 
 ### Documentation
 
-#### 4. **KNIFE_CATCH_README.md**
+#### 4. **docs/KNIFE_CATCH_README.md**
 - Strategy overview & how it works
 - Complete 8-factor scoring breakdown
 - Classification thresholds
@@ -57,7 +57,7 @@ launchctl load ~/Library/LaunchAgents/com.user.knife-catch-scanner.plist
 - Feature highlights
 - Important warnings
 
-#### 5. **KNIFE_CATCH_GUIDE.md** (120+ lines)
+#### 5. **docs/KNIFE_CATCH_GUIDE.md** (120+ lines)
 - Complete user guide with detailed explanations
 - What is a knife catch & why it works
 - Scoring system deep-dive with formulas
@@ -68,7 +68,7 @@ launchctl load ~/Library/LaunchAgents/com.user.knife-catch-scanner.plist
 - Optimization ideas
 - Troubleshooting guide
 
-#### 6. **QUICK_REFERENCE.md**
+#### 6. **docs/QUICK_REFERENCE.md**
 - One-liners for common commands
 - Scoring summary table
 - 8-point checklist
@@ -141,16 +141,16 @@ R/R     1 : 1.75
 
 ```bash
 # Copy plist to launchd
-cp com.user.knife-catch-scanner.plist ~/Library/LaunchAgents/
+cp config/com.user.knife-catch-scanner.plist ~/Library/LaunchAgents/
 
 # Load it (runs daily at 4:10 PM ET)
-launchctl load ~/Library/LaunchAgents/com.user.knife-catch-scanner.plist
+launchctl load ~/Library/LaunchAgents/config/com.user.knife-catch-scanner.plist
 
 # Check status
 launchctl list | grep knife-catch
 
 # View logs
-tail -f scan_results/scanner.log
+tail -f reports/daily/scanner.log
 ```
 
 ## 📁 Files Created
@@ -158,13 +158,13 @@ tail -f scan_results/scanner.log
 ```
 stock-scanner/
 ├── knife_catch_scanner.py          ✅ Main scanner (500+ lines)
-├── run_daily_scan.py               ✅ Daily automation wrapper
-├── com.user.knife-catch-scanner.plist ✅ macOS launchd config
-├── KNIFE_CATCH_README.md           ✅ Technical documentation
-├── KNIFE_CATCH_GUIDE.md            ✅ Complete user guide (3000+ words)
-├── QUICK_REFERENCE.md              ✅ Quick reference card
+├── scripts/run_daily_scan.py               ✅ Daily automation wrapper
+├── config/com.user.knife-catch-scanner.plist ✅ macOS launchd config
+├── docs/KNIFE_CATCH_README.md           ✅ Technical documentation
+├── docs/KNIFE_CATCH_GUIDE.md            ✅ Complete user guide (3000+ words)
+├── docs/QUICK_REFERENCE.md              ✅ Quick reference card
 ├── SETUP.sh                        ✅ Setup instructions
-└── scan_results/                   (auto-created on first run)
+└── reports/daily/                   (auto-created on first run)
     ├── knife_catch_history.csv     (signal log)
     ├── scan_YYYYMMDD_HHMMSS.txt    (detailed results)
     ├── scanner.log                 (daily log)
@@ -175,9 +175,9 @@ stock-scanner/
 
 | Document | Audience | Purpose |
 |----------|----------|---------|
-| QUICK_REFERENCE.md | Everyone | Cheat sheet for daily use |
-| KNIFE_CATCH_GUIDE.md | Traders | Learn strategy + examples |
-| KNIFE_CATCH_README.md | Technical | Understand scoring system |
+| docs/QUICK_REFERENCE.md | Everyone | Cheat sheet for daily use |
+| docs/KNIFE_CATCH_GUIDE.md | Traders | Learn strategy + examples |
+| docs/KNIFE_CATCH_README.md | Technical | Understand scoring system |
 | SETUP.sh | Setup | Install & configure |
 | knife_catch_scanner.py | Developers | Source code |
 
@@ -224,11 +224,11 @@ stock-scanner/
 
 ## 📞 Support
 
-- **How to use?** → QUICK_REFERENCE.md
-- **Why low score?** → KNIFE_CATCH_GUIDE.md (factor explanations)
-- **How to enter?** → KNIFE_CATCH_GUIDE.md (step-by-step section)
+- **How to use?** → docs/QUICK_REFERENCE.md
+- **Why low score?** → docs/KNIFE_CATCH_GUIDE.md (factor explanations)
+- **How to enter?** → docs/KNIFE_CATCH_GUIDE.md (step-by-step section)
 - **How to modify?** → knife_catch_scanner.py (inline comments)
-- **Automation help?** → Check launchd logs, test with run_daily_scan.py
+- **Automation help?** → Check launchd logs, test with scripts/run_daily_scan.py
 
 ## ✅ Testing Status
 

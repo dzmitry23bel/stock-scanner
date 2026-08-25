@@ -1,6 +1,0 @@
-"""Backward-compatible CLI for the trend/momentum scanner."""
-from scanners.long_term_scanner import *
-from scanners.long_term_scanner import main
-
-if __name__ == "__main__":
-    main()

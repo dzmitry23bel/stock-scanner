@@ -8,7 +8,7 @@
     <key>ProgramArguments</key>
     <array>
         <string>/usr/bin/python3</string>
-        <string>/Users/dzmitry/code/stock-scanner/run_daily_scan.py</string>
+        <string>/Users/dzmitry/code/stock-scanner/scripts/run_daily_scan.py</string>
     </array>
     
     <!-- Run at 4:10 PM EST (21:10 UTC / 20:10 EDT) weekdays only -->
@@ -62,9 +62,9 @@
     
     <!-- Logging -->
     <key>StandardOutPath</key>
-    <string>/Users/dzmitry/code/stock-scanner/scan_results/scanner.log</string>
+    <string>/Users/dzmitry/code/stock-scanner/reports/daily/scanner.log</string>
     <key>StandardErrorPath</key>
-    <string>/Users/dzmitry/code/stock-scanner/scan_results/scanner_error.log</string>
+    <string>/Users/dzmitry/code/stock-scanner/reports/daily/scanner_error.log</string>
     
     <!-- Restart on failure -->
     <key>KeepAlive</key>

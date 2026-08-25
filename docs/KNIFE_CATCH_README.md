@@ -175,8 +175,8 @@ The scanner:
 ## Files
 
 - `knife_catch_scanner.py` — Main scanner script
-- `tickers.txt` — List of 142 tickers to scan
-- `catalysts.example.json` — Optional catalyst bonus config
+- `data/tickers.txt` — List of 142 tickers to scan
+- `../config/catalysts.example.json` — Optional catalyst bonus config
 - `KNIFE_CATCH_README.md` — This file
 
 ## Requirements

@@ -31,7 +31,7 @@ try:
 except ImportError:
     HAS_RICH = False
 
-DEFAULT_TICKERS_FILE = Path(__file__).resolve().parent.parent / "tickers.txt"
+DEFAULT_TICKERS_FILE = Path(__file__).resolve().parent.parent / "data" / "tickers.txt"
 
 # Trading-day windows used for the return columns.
 RETURN_WINDOWS = {"1W": 5, "1M": 21, "3M": 63, "6M": 126, "1Y": 252, "3Y": 756}

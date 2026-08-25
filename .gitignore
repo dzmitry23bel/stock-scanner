@@ -3,3 +3,7 @@ __pycache__/
 *.pyc
 catalysts.json
 .DS_Store
+reports/*
+!reports/.gitkeep
+!reports/ci/
+!reports/ci/**

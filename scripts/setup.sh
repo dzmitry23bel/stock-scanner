@@ -15,17 +15,17 @@ echo "Testing scanner with 5 tickers..."
 # 3. Run full scan
 echo ""
 echo "Running full scan on all 142 tickers (top 50)..."
-.venv/bin/python knife_catch_scanner.py --top 50
+.venv/bin/python scripts/run_all_scanners.py --top 50
 
 # 4. (Optional) Set up daily automation on macOS
 echo ""
 echo "To set up automated daily scans at 4:10 PM ET (market close):"
 echo ""
-echo "  1. Edit com.user.knife-catch-scanner.plist if needed (adjust paths/times)"
-echo "  2. Copy to launchd: cp com.user.knife-catch-scanner.plist ~/Library/LaunchAgents/"
+echo "  1. Edit config/com.user.knife-catch-scanner.plist if needed (adjust paths/times)"
+echo "  2. Copy to launchd: cp config/com.user.knife-catch-scanner.plist ~/Library/LaunchAgents/"
 echo "  3. Load it: launchctl load ~/Library/LaunchAgents/com.user.knife-catch-scanner.plist"
 echo "  4. Check status: launchctl list | grep knife-catch"
-echo "  5. View logs: tail -f scan_results/scanner.log"
+echo "  5. View logs: tail -f reports/daily/scanner.log"
 echo ""
 echo "To unload: launchctl unload ~/Library/LaunchAgents/com.user.knife-catch-scanner.plist"
 echo ""

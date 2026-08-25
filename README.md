@@ -6,7 +6,7 @@ Python toolkit for scanning a shared universe of US stocks with three independen
 Yahoo Finance -> scanner strategy -> score -> ranked report
 ```
 
-The default universe is maintained in [`tickers.txt`](tickers.txt). The project currently contains 156 tickers.
+The default universe is maintained in [`data/tickers.txt`](data/tickers.txt). The project currently contains 156 tickers.
 
 ## Quick Start
 
@@ -17,7 +17,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 
 # Run all strategies and show the top 50 from each
-python run_all_scanners.py --top 50
+python scripts/run_all_scanners.py --top 50
 ```
 
 The master report shows each scanner separately with its signal and trade levels.
@@ -39,7 +39,7 @@ python knife_catch_scanner.py GOOGL MPWR MRVL
 
 Classifications: `STRONG KNIFE CATCH`, `LONG CANDIDATE`, `WAIT`, `AVOID`.
 
-Detailed documentation: [`KNIFE_CATCH_GUIDE.md`](KNIFE_CATCH_GUIDE.md) and [`KNIFE_CATCH_README.md`](KNIFE_CATCH_README.md).
+Detailed documentation: [`docs/KNIFE_CATCH_GUIDE.md`](docs/KNIFE_CATCH_GUIDE.md) and [`docs/KNIFE_CATCH_README.md`](docs/KNIFE_CATCH_README.md).
 
 ### 2. Trend/Momentum: Growth
 
@@ -50,7 +50,7 @@ Horizon: 5-30 days. Measures trend alignment, multi-period momentum, pullback qu
 ```bash
 python long_term_scanner.py
 python long_term_scanner.py AAPL NVDA CGEM
-python long_term_scanner.py --tickers-file my_tickers.txt --catalysts catalysts.json
+python long_term_scanner.py --tickers-file my_tickers.txt --catalysts config/catalysts.json
 ```
 
 Classifications: `BUY DIP`, `MOMENTUM BUY`, `WATCH`, `WAIT`, `AVOID`.
@@ -63,19 +63,19 @@ Horizon: 1-5 days, with optional leverage. Uses daily momentum/trend, ATR, pullb
 
 ```bash
 python short_term_scanner.py --top 20
-python short_term_scanner.py MRVL AAPL CRDO --catalysts catalysts.json
+python short_term_scanner.py MRVL AAPL CRDO --catalysts config/catalysts.json
 ```
 
 Classifications: `LONG`, `SHORT`, `WAIT`. Intraday Yahoo Finance data is best-effort and must be confirmed with a live feed before trading.
 
 ## Master Scanner
 
-[`run_all_scanners.py`](run_all_scanners.py) is the recommended entry point. It imports all three strategies directly, ranks each result, and prints separate tables with signal and trade levels.
+[`scripts/run_all_scanners.py`](scripts/run_all_scanners.py) is the recommended entry point. It imports all three strategies directly, ranks each result, and prints separate tables with signal and trade levels.
 
 ```bash
-python run_all_scanners.py              # top 50 per scanner
-python run_all_scanners.py --top 20     # top 20 per scanner
-python run_all_scanners.py --catalysts catalysts.json
+python scripts/run_all_scanners.py              # top 50 per scanner
+python scripts/run_all_scanners.py --top 20     # top 20 per scanner
+python scripts/run_all_scanners.py --catalysts config/catalysts.json
 ```
 
 `--top` controls the number of results retained from each strategy. The report displays up to 15 rows per strategy so the terminal remains readable.
@@ -84,11 +84,11 @@ python run_all_scanners.py --catalysts catalysts.json
 
 ### Tickers
 
-Edit [`tickers.txt`](tickers.txt), one symbol per line. Lines beginning with `#` are ignored. Individual scanner commands also accept explicit tickers or `--tickers-file`.
+Edit [`data/tickers.txt`](data/tickers.txt), one symbol per line. Lines beginning with `#` are ignored. Individual scanner commands also accept explicit tickers or `--tickers-file`.
 
 ### Catalysts
 
-Copy [`catalysts.example.json`](catalysts.example.json) and provide days until the next catalyst:
+Copy [`config/catalysts.example.json`](config/catalysts.example.json) and provide days until the next catalyst:
 
 ```json
 {
@@ -110,19 +110,20 @@ stock-scanner/
 │   ├── knife_catch_scanner.py        # Reversal scanner
 │   ├── long_term_scanner.py     # Growth scanner
 │   └── short_term_scanner.py          # Intraday/day-trade scanner
-├── run_all_scanners.py       # Unified report for all strategies
-├── run_daily_scan.py         # Knife-catch logging automation
-├── scanner.py                # Compatibility CLI wrapper
-├── short_term_scanner.py              # Compatibility CLI wrapper
-├── knife_catch_scanner.py    # Compatibility CLI wrapper
-├── tickers.txt               # Default ticker universe
-├── catalysts.example.json    # Catalyst file template
+├── scripts/
+│   ├── run_all_scanners.py   # Unified report for all strategies
+│   ├── run_daily_scan.py     # Knife-catch logging automation
+│   └── setup.sh              # Local setup helper
+├── knife_catch_scanner.py    # Reversal CLI
+├── long_term_scanner.py      # Growth CLI
+├── short_term_scanner.py     # Day-trading CLI
+├── data/tickers.txt          # Default ticker universe
+├── config/                   # Catalyst and macOS launchd config
 ├── requirements.txt          # Python dependencies
-├── scan_results/             # Generated reports and history
-└── com.user.knife-catch-scanner.plist  # macOS launchd job
+└── reports/                  # Generated reports and history
 ```
 
-The three root-level scanner files are intentionally small compatibility wrappers. New code should import from `scanners`.
+The root-level scanner files are CLI entry points. New code should import implementations from `scanners`.
 
 ## Daily Automation
 
@@ -130,27 +131,26 @@ The three root-level scanner files are intentionally small compatibility wrapper
 
 [`daily-scan.yml`](.github/workflows/daily-scan.yml) runs automatically on weekdays at 10:30 America/New_York, approximately one hour after the NYSE open. It handles daylight-saving time by using two UTC cron slots and runs only when the NYSE calendar is open. A manual run is also available from the Actions tab.
 
-Each successful run saves timestamped Markdown, JSON, and standalone HTML reports under [`scan_results/ci/`](scan_results/ci/), then commits them back to the repository. The HTML report contains only actionable signals such as `LONG CANDIDATE`, `BUY DIP`, `MOMENTUM BUY`, `LONG`, and `SHORT`; `WAIT`, `WATCH`, and `AVOID` are excluded to keep it readable. Every listed row includes the ticker, score, signal, Entry, Stop, TP1, and TP2 when an actionable plan exists.
+Each successful run saves timestamped Markdown, JSON, and standalone HTML reports under `reports/ci/`, then commits them back to the repository. The HTML report contains only actionable signals such as `LONG CANDIDATE`, `BUY DIP`, `MOMENTUM BUY`, `LONG`, and `SHORT`; `WAIT`, `WATCH`, and `AVOID` are excluded to keep it readable. Every listed row includes the ticker, score, signal, Entry, Stop, TP1, and TP2 when an actionable plan exists.
 
 Run a single logged knife-catch scan:
 
 ```bash
-python run_daily_scan.py
+python scripts/run_daily_scan.py
 ```
 
 To use macOS `launchd`:
 
 ```bash
-cp com.user.knife-catch-scanner.plist ~/Library/LaunchAgents/
+cp config/com.user.knife-catch-scanner.plist ~/Library/LaunchAgents/
 launchctl load ~/Library/LaunchAgents/com.user.knife-catch-scanner.plist
 launchctl list | grep knife-catch
 launchctl unload ~/Library/LaunchAgents/com.user.knife-catch-scanner.plist
 ```
 
-Reports and CSV history are written to `scan_results/`. Master Markdown, JSON, and HTML reports are stored separately under `scan_results/master/` for local runs and `scan_results/ci/` for GitHub Actions runs.
+Reports and CSV history are written to `reports/`. Master Markdown, JSON, and HTML reports are stored separately under `reports/master/` for local runs and `reports/ci/` for GitHub Actions runs.
 
 ## Data and Risk Notes
-
 - The scanners are research and ranking tools, not financial advice.
 - Yahoo Finance can return delayed, missing, or rate-limited data.
 - Scores are relative technical signals, not guarantees of future returns.

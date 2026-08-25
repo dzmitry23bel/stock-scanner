@@ -44,7 +44,7 @@ try:
 except ImportError:
     HAS_RICH = False
 
-DEFAULT_TICKERS_FILE = Path(__file__).resolve().parent.parent / "tickers.txt"
+DEFAULT_TICKERS_FILE = Path(__file__).resolve().parent.parent / "data" / "tickers.txt"
 
 
 @dataclass
