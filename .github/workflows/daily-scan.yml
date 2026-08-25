@@ -1,0 +1,58 @@
+name: Daily Market Scan
+
+on:
+  schedule:
+    # 10:30 America/New_York. GitHub cron is UTC, so both DST slots are listed.
+    - cron: "30 14 * * 1-5"
+    - cron: "30 15 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Skip outside NYSE schedule
+        id: market
+        run: |
+          python - <<'PY'
+          import os
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+          import pandas_market_calendars as mcal
+
+          now = datetime.now(ZoneInfo("America/New_York"))
+          calendar = mcal.get_calendar("NYSE")
+          schedule = calendar.schedule(start_date=now.date(), end_date=now.date())
+          should_run = bool(not schedule.empty and now.hour == 10 and 15 <= now.minute <= 45)
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              output.write(f"should_run={'true' if should_run else 'false'}\n")
+          print(f"New York time: {now.isoformat()}, NYSE open: {not schedule.empty}, run: {should_run}")
+          PY
+
+      - name: Run all scanners
+        if: steps.market.outputs.should_run == 'true'
+        run: python run_all_scanners.py --top 50 --report-dir scan_results/ci
+
+      - name: Publish dated report
+        if: steps.market.outputs.should_run == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scan_results/ci
+          git diff --cached --quiet || git commit -m "Add daily scanner report $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push

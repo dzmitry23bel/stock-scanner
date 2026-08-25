@@ -13,6 +13,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -32,12 +33,68 @@ except ImportError:
     HAS_RICH = False
 
 DEFAULT_SCANNERS_DIR = Path(__file__).parent
+DEFAULT_REPORT_DIR = DEFAULT_SCANNERS_DIR / "scan_results" / "master"
+
+
+def format_level(value: Optional[float]) -> str:
+    return "-" if value is None else f"${value:.2f}"
+
+
+def write_history_report(all_signals: dict, consensus_signals: list, report_dir: Path) -> Path:
+    """Write a dated Markdown report and JSON snapshot for later review."""
+    generated = datetime.now().astimezone()
+    timestamp = generated.strftime("%Y-%m-%d_%H-%M-%S_%Z")
+    report_dir.mkdir(parents=True, exist_ok=True)
+    report_path = report_dir / f"master_report_{timestamp}.md"
+    json_path = report_dir / f"master_report_{timestamp}.json"
+
+    lines = [
+        "# Master Scanner Report",
+        "",
+        f"**Generated:** {generated.strftime('%Y-%m-%d %H:%M:%S %Z')}",
+        "",
+        "| Scanner | Ticker | Score | Signal | Entry | Stop | TP1 | TP2 |",
+        "|---|---:|---:|---|---:|---:|---:|---:|",
+    ]
+    for scanner_name, signals in all_signals.items():
+        for signal in signals:
+            lines.append(
+                f"| {scanner_name} | {signal['ticker']} | {signal['score']:.1f} | "
+                f"{signal.get('signal', 'WATCH')} | {format_level(signal.get('entry'))} | "
+                f"{format_level(signal.get('stop'))} | {format_level(signal.get('tp1'))} | "
+                f"{format_level(signal.get('tp2'))} |"
+            )
+
+    lines.extend(["", "## Consensus Signals", ""])
+    if consensus_signals:
+        lines.extend([
+            "| Ticker | Average Score | Scanners |",
+            "|---|---:|---|",
+        ])
+        for ticker, scanners in consensus_signals:
+            average = sum(item["score"] for item in scanners) / len(scanners)
+            names = ", ".join(item["scanner"] for item in scanners)
+            lines.append(f"| {ticker} | {average:.1f} | {names} |")
+    else:
+        lines.append("No consensus signals found.")
+
+    report_path.write_text("\n".join(lines) + "\n")
+    json_path.write_text(json.dumps({
+        "generated_at": generated.isoformat(),
+        "scanners": all_signals,
+        "consensus": [
+            {"ticker": ticker, "signals": scanners}
+            for ticker, scanners in consensus_signals
+        ],
+    }, indent=2, ensure_ascii=False) + "\n")
+    return report_path
 
 
 def get_knife_catch_signals(top_n: int = 50, catalysts: Optional[str] = None) -> list[dict]:
     """Get knife catch signals using direct import."""
     try:
-        from knife_catch_scanner import scan_tickers, load_tickers as load_tickers_kc, load_catalysts
+        from scanners.knife_catch_scanner import scan_tickers
+        from scanners.common import load_tickers as load_tickers_kc, load_catalysts
         
         # Load tickers
         class Args:
@@ -56,7 +113,12 @@ def get_knife_catch_signals(top_n: int = 50, catalysts: Optional[str] = None) ->
             signals.append({
                 'ticker': r.ticker,
                 'score': r.score,
-                'scanner': 'knife_catch'
+                'scanner': 'knife_catch',
+                'signal': r.classification,
+                'entry': r.entry_price,
+                'stop': r.stop_loss,
+                'tp1': r.tp1,
+                'tp2': r.tp2,
             })
         
         return signals
@@ -68,7 +130,7 @@ def get_knife_catch_signals(top_n: int = 50, catalysts: Optional[str] = None) ->
 def get_trend_momentum_signals(top_n: int = 50, catalysts: Optional[str] = None) -> list[dict]:
     """Get trend/momentum signals using direct import."""
     try:
-        from scanner import (
+        from scanners.long_term_scanner import (
             load_tickers as load_tickers_tm,
             load_catalysts,
             analyze
@@ -92,7 +154,12 @@ def get_trend_momentum_signals(top_n: int = 50, catalysts: Optional[str] = None)
             scores.append({
                 'ticker': ticker,
                 'score': result.get('final_score', 0),
-                'scanner': 'trend_momentum'
+                'scanner': 'trend_momentum',
+                'signal': result.get('situation', 'WATCH'),
+                'entry': result.get('price'),
+                'stop': result.get('price') - 2 * result['atr'] if result.get('atr') else None,
+                'tp1': result.get('price') + 2 * result['atr'] if result.get('atr') else None,
+                'tp2': result.get('price') + 3.5 * result['atr'] if result.get('atr') else None,
             })
         
         # Sort and limit
@@ -106,7 +173,7 @@ def get_trend_momentum_signals(top_n: int = 50, catalysts: Optional[str] = None)
 def get_day_trade_signals(top_n: int = 50, catalysts: Optional[str] = None) -> list[dict]:
     """Get day trade signals using direct import."""
     try:
-        from day_trade import (
+        from scanners.short_term_scanner import (
             load_tickers,
             load_catalysts,
             analyze_day
@@ -130,8 +197,23 @@ def get_day_trade_signals(top_n: int = 50, catalysts: Optional[str] = None) -> l
             scores.append({
                 'ticker': ticker,
                 'score': result.get('day_score', 0),
-                'scanner': 'day_trade'
+                'scanner': 'day_trade',
+                'signal': result.get('direction', 'WAIT'),
+                'entry': result.get('price'),
+                'stop': None,
+                'tp1': None,
+                'tp2': None,
             })
+
+            from scanners.short_term_scanner import build_trade_plan
+            plan = build_trade_plan(result)
+            if plan:
+                scores[-1].update({
+                    'entry': (plan['entry_low'] + plan['entry_high']) / 2,
+                    'stop': plan['stop'],
+                    'tp1': plan['tp1'],
+                    'tp2': plan['tp2'],
+                })
         
         # Sort and limit
         signals = sorted(scores, key=lambda x: x['score'], reverse=True)[:top_n]
@@ -188,9 +270,14 @@ def print_results(all_signals: dict, consensus_signals: list) -> None:
             table = Table(show_header=True, header_style="bold")
             table.add_column("Ticker", style="cyan")
             table.add_column("Score", justify="right")
+            table.add_column("Signal")
+            table.add_column("Entry")
+            table.add_column("Stop")
+            table.add_column("TP1")
+            table.add_column("TP2")
             
             for signal in all_signals["knife_catch"][:15]:
-                table.add_row(signal['ticker'], f"{signal['score']:.1f}")
+                table.add_row(signal['ticker'], f"{signal['score']:.1f}", signal.get('signal', '-'), format_level(signal.get('entry')), format_level(signal.get('stop')), format_level(signal.get('tp1')), format_level(signal.get('tp2')))
             
             console.print(table)
         else:
@@ -203,9 +290,14 @@ def print_results(all_signals: dict, consensus_signals: list) -> None:
             table = Table(show_header=True, header_style="bold")
             table.add_column("Ticker", style="cyan")
             table.add_column("Score", justify="right")
+            table.add_column("Signal")
+            table.add_column("Entry")
+            table.add_column("Stop")
+            table.add_column("TP1")
+            table.add_column("TP2")
             
             for signal in all_signals["trend_momentum"][:15]:
-                table.add_row(signal['ticker'], f"{signal['score']:.1f}")
+                table.add_row(signal['ticker'], f"{signal['score']:.1f}", signal.get('signal', '-'), format_level(signal.get('entry')), format_level(signal.get('stop')), format_level(signal.get('tp1')), format_level(signal.get('tp2')))
             
             console.print(table)
         else:
@@ -218,9 +310,14 @@ def print_results(all_signals: dict, consensus_signals: list) -> None:
             table = Table(show_header=True, header_style="bold")
             table.add_column("Ticker", style="cyan")
             table.add_column("Score", justify="right")
+            table.add_column("Signal")
+            table.add_column("Entry")
+            table.add_column("Stop")
+            table.add_column("TP1")
+            table.add_column("TP2")
             
             for signal in all_signals["day_trade"][:15]:
-                table.add_row(signal['ticker'], f"{signal['score']:.1f}")
+                table.add_row(signal['ticker'], f"{signal['score']:.1f}", signal.get('signal', '-'), format_level(signal.get('entry')), format_level(signal.get('stop')), format_level(signal.get('tp1')), format_level(signal.get('tp2')))
             
             console.print(table)
         else:
@@ -291,6 +388,7 @@ def main():
     
     parser.add_argument("--top", type=int, default=50, help="Top N results per scanner")
     parser.add_argument("--catalysts", type=str, help="Path to catalysts JSON file")
+    parser.add_argument("--report-dir", type=Path, default=DEFAULT_REPORT_DIR, help="Directory for dated Markdown and JSON reports")
     
     args = parser.parse_args()
     
@@ -308,6 +406,8 @@ def main():
     
     # Print
     print_results(all_signals, consensus_signals)
+    report_path = write_history_report(all_signals, consensus_signals, args.report_dir)
+    print(f"Report saved to: {report_path}", file=sys.stderr)
     
     # Summary
     print(f"\n✓ Complete! ({len(all_signals['knife_catch'])} KC + {len(all_signals['trend_momentum'])} TM + {len(all_signals['day_trade'])} DT + {len(consensus_signals)} consensus)\n", file=sys.stderr)
