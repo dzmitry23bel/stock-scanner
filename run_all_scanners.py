@@ -13,12 +13,12 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import html
 import json
 import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
-from collections import defaultdict
 
 # Add current directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
@@ -40,7 +40,95 @@ def format_level(value: Optional[float]) -> str:
     return "-" if value is None else f"${value:.2f}"
 
 
-def write_history_report(all_signals: dict, consensus_signals: list, report_dir: Path) -> Path:
+def visible_levels(signal: dict) -> dict:
+    """Keep only Entry for non-actionable signals."""
+    signal_name = signal.get("signal")
+    wait_signal = signal_name == "🟡 WAIT" or signal_name == "WAIT"
+    watch_signal = signal.get("scanner") == "trend_momentum" and signal_name == "WATCH"
+    if wait_signal or watch_signal:
+        return {"entry": signal.get("entry"), "stop": None, "tp1": None, "tp2": None}
+    return signal
+
+
+ACTIVE_SIGNALS = {
+    "🟢 STRONG KNIFE CATCH",
+    "🟢 LONG CANDIDATE",
+    "BUY DIP",
+    "MOMENTUM BUY",
+    "LONG",
+    "SHORT",
+}
+
+
+def active_signals(all_signals: dict) -> dict:
+    """Return only actionable signals for the compact HTML report."""
+    return {
+        scanner: [signal for signal in signals if signal.get("signal") in ACTIVE_SIGNALS]
+        for scanner, signals in all_signals.items()
+    }
+
+
+def write_html_report(all_signals: dict, report_dir: Path) -> Path:
+    """Write a standalone, browser-friendly report with actionable signals only."""
+    generated = datetime.now().astimezone()
+    timestamp = generated.strftime("%Y-%m-%d_%H-%M-%S_%Z")
+    report_dir.mkdir(parents=True, exist_ok=True)
+    report_path = report_dir / f"master_report_{timestamp}.html"
+    actionable = active_signals(all_signals)
+    total = sum(len(signals) for signals in actionable.values())
+
+    sections = []
+    labels = {
+        "knife_catch": ("Knife Catch", "Reversal setups", "gold"),
+        "trend_momentum": ("Trend / Momentum", "Growth setups", "green"),
+        "day_trade": ("Day Trading", "Short-term setups", "blue"),
+    }
+    for scanner, signals in actionable.items():
+        title, subtitle, color = labels.get(scanner, (scanner, "", "green"))
+        rows = []
+        for signal in signals:
+            levels = visible_levels(signal)
+            rows.append(
+                "<tr>"
+                f"<td class=\"ticker\">{html.escape(str(signal['ticker']))}</td>"
+                f"<td><span class=\"signal {color}\">{html.escape(str(signal.get('signal', '-')))}</span></td>"
+                f"<td class=\"score\">{signal['score']:.1f}</td>"
+                f"<td>{html.escape(format_level(levels.get('entry')))}</td>"
+                f"<td>{html.escape(format_level(levels.get('stop')))}</td>"
+                f"<td>{html.escape(format_level(levels.get('tp1')))}</td>"
+                f"<td>{html.escape(format_level(levels.get('tp2')))}</td>"
+                "</tr>"
+            )
+        body = "".join(rows) or '<tr><td class="empty" colspan="7">No active signals</td></tr>'
+        sections.append(
+            f'<section class="scanner {color}"><div class="section-heading"><div><h2>{title}</h2><p>{subtitle}</p></div><b>{len(signals):02d}</b></div>'
+            '<div class="table-wrap"><table><thead><tr><th>Ticker</th><th>Signal</th><th>Score</th><th>Entry</th><th>Stop</th><th>TP1</th><th>TP2</th></tr></thead>'
+            f"<tbody>{body}</tbody></table></div></section>"
+        )
+
+    document = f'''<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Master Scanner | {generated.strftime('%Y-%m-%d')}</title>
+<style>
+:root {{ color-scheme: dark; --bg:#101315; --panel:#181d20; --line:#2b3438; --muted:#93a0a5; --text:#eef3f1; --gold:#e4b85e; --green:#70d19a; --blue:#73b7e8; }}
+* {{ box-sizing:border-box; }} body {{ margin:0; background:radial-gradient(circle at 85% -10%,#233b35 0,transparent 34%),var(--bg); color:var(--text); font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }}
+.shell {{ max-width:1240px; margin:auto; padding:48px 24px 64px; }} .eyebrow {{ color:var(--muted); letter-spacing:.14em; text-transform:uppercase; font-size:12px; }}
+h1 {{ margin:8px 0 4px; font-size:clamp(30px,5vw,56px); line-height:1; letter-spacing:-.02em; }} .date {{ color:var(--muted); }}
+.summary {{ display:flex; gap:12px; flex-wrap:wrap; margin:30px 0; }} .metric {{ background:rgba(24,29,32,.86); border:1px solid var(--line); border-radius:10px; padding:14px 18px; min-width:150px; }} .metric strong {{ display:block; font-size:28px; }} .metric span {{ color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.08em; }}
+.scanner {{ background:rgba(24,29,32,.88); border:1px solid var(--line); border-top:3px solid var(--green); border-radius:10px; margin:18px 0; overflow:hidden; }} .scanner.gold {{ border-top-color:var(--gold); }} .scanner.blue {{ border-top-color:var(--blue); }}
+.section-heading {{ display:flex; align-items:center; justify-content:space-between; padding:20px 22px 15px; }} h2 {{ margin:0; font-size:21px; }} .section-heading p {{ margin:3px 0 0; color:var(--muted); }} .section-heading b {{ color:var(--muted); font-size:22px; }}
+.table-wrap {{ overflow-x:auto; }} table {{ width:100%; border-collapse:collapse; min-width:700px; }} th,td {{ padding:13px 16px; border-top:1px solid var(--line); text-align:right; white-space:nowrap; }} th:first-child,td:first-child,th:nth-child(2),td:nth-child(2) {{ text-align:left; }} th {{ color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.08em; }} .ticker {{ font-weight:700; letter-spacing:.04em; }} .score {{ font-weight:700; }} .signal {{ display:inline-block; border:1px solid currentColor; border-radius:999px; padding:3px 9px; font-size:12px; }} .signal.gold {{ color:var(--gold); }} .signal.green {{ color:var(--green); }} .signal.blue {{ color:var(--blue); }} .empty {{ color:var(--muted); text-align:center; padding:28px; }} footer {{ color:var(--muted); font-size:12px; margin-top:28px; }}
+@media(max-width:600px) {{ .shell {{ padding:30px 14px 45px; }} .metric {{ flex:1; min-width:120px; }} th,td {{ padding:11px 10px; }} }}
+</style></head><body><main class="shell">
+<div class="eyebrow">Actionable market setups</div><h1>Master Scanner</h1><div class="date">{generated.strftime('%A, %B %d, %Y · %H:%M:%S %Z')}</div>
+<div class="summary"><div class="metric"><strong>{total}</strong><span>Active signals</span></div><div class="metric"><strong>{len(actionable['knife_catch'])}</strong><span>Reversal</span></div><div class="metric"><strong>{len(actionable['trend_momentum'])}</strong><span>Growth</span></div><div class="metric"><strong>{len(actionable['day_trade'])}</strong><span>Short term</span></div></div>
+{''.join(sections)}<footer>WAIT, WATCH, and AVOID results are intentionally excluded. Verify live price, liquidity, volume, and risk before trading.</footer>
+</main></body></html>'''
+    report_path.write_text(document)
+    return report_path
+
+
+def write_history_report(all_signals: dict, report_dir: Path) -> Path:
     """Write a dated Markdown report and JSON snapshot for later review."""
     generated = datetime.now().astimezone()
     timestamp = generated.strftime("%Y-%m-%d_%H-%M-%S_%Z")
@@ -58,34 +146,24 @@ def write_history_report(all_signals: dict, consensus_signals: list, report_dir:
     ]
     for scanner_name, signals in all_signals.items():
         for signal in signals:
+            levels = visible_levels(signal)
             lines.append(
                 f"| {scanner_name} | {signal['ticker']} | {signal['score']:.1f} | "
-                f"{signal.get('signal', 'WATCH')} | {format_level(signal.get('entry'))} | "
-                f"{format_level(signal.get('stop'))} | {format_level(signal.get('tp1'))} | "
-                f"{format_level(signal.get('tp2'))} |"
+                f"{signal.get('signal', 'WATCH')} | {format_level(levels.get('entry'))} | "
+                f"{format_level(levels.get('stop'))} | {format_level(levels.get('tp1'))} | "
+                f"{format_level(levels.get('tp2'))} |"
             )
-
-    lines.extend(["", "## Consensus Signals", ""])
-    if consensus_signals:
-        lines.extend([
-            "| Ticker | Average Score | Scanners |",
-            "|---|---:|---|",
-        ])
-        for ticker, scanners in consensus_signals:
-            average = sum(item["score"] for item in scanners) / len(scanners)
-            names = ", ".join(item["scanner"] for item in scanners)
-            lines.append(f"| {ticker} | {average:.1f} | {names} |")
-    else:
-        lines.append("No consensus signals found.")
 
     report_path.write_text("\n".join(lines) + "\n")
     json_path.write_text(json.dumps({
         "generated_at": generated.isoformat(),
-        "scanners": all_signals,
-        "consensus": [
-            {"ticker": ticker, "signals": scanners}
-            for ticker, scanners in consensus_signals
-        ],
+        "scanners": {
+            scanner: [
+                {**signal, **visible_levels(signal)}
+                for signal in signals
+            ]
+            for scanner, signals in all_signals.items()
+        },
     }, indent=2, ensure_ascii=False) + "\n")
     return report_path
 
@@ -116,9 +194,9 @@ def get_knife_catch_signals(top_n: int = 50, catalysts: Optional[str] = None) ->
                 'scanner': 'knife_catch',
                 'signal': r.classification,
                 'entry': r.entry_price,
-                'stop': r.stop_loss,
-                'tp1': r.tp1,
-                'tp2': r.tp2,
+                'stop': r.stop_loss if r.classification not in ('🟡 WAIT', 'WAIT') else None,
+                'tp1': r.tp1 if r.classification not in ('🟡 WAIT', 'WAIT') else None,
+                'tp2': r.tp2 if r.classification not in ('🟡 WAIT', 'WAIT') else None,
             })
         
         return signals
@@ -157,9 +235,9 @@ def get_trend_momentum_signals(top_n: int = 50, catalysts: Optional[str] = None)
                 'scanner': 'trend_momentum',
                 'signal': result.get('situation', 'WATCH'),
                 'entry': result.get('price'),
-                'stop': result.get('price') - 2 * result['atr'] if result.get('atr') else None,
-                'tp1': result.get('price') + 2 * result['atr'] if result.get('atr') else None,
-                'tp2': result.get('price') + 3.5 * result['atr'] if result.get('atr') else None,
+                'stop': result.get('price') - 2 * result['atr'] if result.get('atr') and result.get('situation') != 'WAIT' else None,
+                'tp1': result.get('price') + 2 * result['atr'] if result.get('atr') and result.get('situation') != 'WAIT' else None,
+                'tp2': result.get('price') + 3.5 * result['atr'] if result.get('atr') and result.get('situation') != 'WAIT' else None,
             })
         
         # Sort and limit
@@ -223,36 +301,7 @@ def get_day_trade_signals(top_n: int = 50, catalysts: Optional[str] = None) -> l
         return []
 
 
-def identify_consensus_signals(all_signals: dict) -> list[tuple]:
-    """Identify tickers that appear in multiple scanners (high conviction)."""
-    consensus = defaultdict(list)
-    
-    for scanner_type, signals in all_signals.items():
-        for signal in signals:
-            ticker = signal['ticker']
-            consensus[ticker].append({
-                'scanner': scanner_type,
-                'score': signal['score']
-            })
-    
-    # Filter to only those appearing in 2+ scanners
-    multi_scanner_hits = {
-        ticker: scanners 
-        for ticker, scanners in consensus.items() 
-        if len(scanners) >= 2
-    }
-    
-    # Sort by average score
-    sorted_consensus = sorted(
-        multi_scanner_hits.items(),
-        key=lambda x: sum(s['score'] for s in x[1]) / len(x[1]),
-        reverse=True
-    )
-    
-    return sorted_consensus
-
-
-def print_results(all_signals: dict, consensus_signals: list) -> None:
+def print_results(all_signals: dict) -> None:
     """Print results in formatted output."""
     
     if HAS_RICH:
@@ -277,7 +326,8 @@ def print_results(all_signals: dict, consensus_signals: list) -> None:
             table.add_column("TP2")
             
             for signal in all_signals["knife_catch"][:15]:
-                table.add_row(signal['ticker'], f"{signal['score']:.1f}", signal.get('signal', '-'), format_level(signal.get('entry')), format_level(signal.get('stop')), format_level(signal.get('tp1')), format_level(signal.get('tp2')))
+                levels = visible_levels(signal)
+                table.add_row(signal['ticker'], f"{signal['score']:.1f}", signal.get('signal', '-'), format_level(levels.get('entry')), format_level(levels.get('stop')), format_level(levels.get('tp1')), format_level(levels.get('tp2')))
             
             console.print(table)
         else:
@@ -297,7 +347,8 @@ def print_results(all_signals: dict, consensus_signals: list) -> None:
             table.add_column("TP2")
             
             for signal in all_signals["trend_momentum"][:15]:
-                table.add_row(signal['ticker'], f"{signal['score']:.1f}", signal.get('signal', '-'), format_level(signal.get('entry')), format_level(signal.get('stop')), format_level(signal.get('tp1')), format_level(signal.get('tp2')))
+                levels = visible_levels(signal)
+                table.add_row(signal['ticker'], f"{signal['score']:.1f}", signal.get('signal', '-'), format_level(levels.get('entry')), format_level(levels.get('stop')), format_level(levels.get('tp1')), format_level(levels.get('tp2')))
             
             console.print(table)
         else:
@@ -324,29 +375,6 @@ def print_results(all_signals: dict, consensus_signals: list) -> None:
             console.print("[dim]No signals[/dim]")
         console.print("")
         
-        # Consensus
-        console.print("[bold red]🔥 HIGH CONVICTION SIGNALS[/bold red] (2+ scanners)")
-        if consensus_signals:
-            table = Table(show_header=True, header_style="bold red")
-            table.add_column("Ticker", style="yellow")
-            table.add_column("Avg Score", justify="right")
-            table.add_column("Scanners", width=50)
-            
-            for ticker, scanners in consensus_signals[:20]:
-                avg_score = sum(s['score'] for s in scanners) / len(scanners)
-                scanners_str = " + ".join(
-                    f"{s['scanner'][:6]} ({s['score']:.0f})"
-                    for s in sorted(scanners, key=lambda x: x['score'], reverse=True)
-                )
-                table.add_row(ticker, f"{avg_score:.1f}", scanners_str)
-            
-            console.print(table)
-        else:
-            console.print("[dim]None found[/dim]")
-        console.print("")
-        
-        footer = Text("Tip: Tickers appearing in 2+ scanners have higher conviction", style="dim")
-        console.print(Panel(footer, border_style="dim"))
     else:
         # Plain text output
         print("\n" + "=" * 100)
@@ -372,11 +400,6 @@ def print_results(all_signals: dict, consensus_signals: list) -> None:
                 print(f"  {s['ticker']:<8} {s['score']:>6.1f}")
             print("")
         
-        if consensus_signals:
-            print("🔥 HIGH CONVICTION")
-            for ticker, scanners in consensus_signals[:10]:
-                avg = sum(s['score'] for s in scanners) / len(scanners)
-                print(f"  {ticker:<8} {avg:>6.1f}")
 
 
 def main():
@@ -401,16 +424,15 @@ def main():
         "day_trade": get_day_trade_signals(args.top, args.catalysts),
     }
     
-    # Get consensus
-    consensus_signals = identify_consensus_signals(all_signals)
-    
     # Print
-    print_results(all_signals, consensus_signals)
-    report_path = write_history_report(all_signals, consensus_signals, args.report_dir)
+    print_results(all_signals)
+    report_path = write_history_report(all_signals, args.report_dir)
+    html_path = write_html_report(all_signals, args.report_dir)
     print(f"Report saved to: {report_path}", file=sys.stderr)
+    print(f"HTML report saved to: {html_path}", file=sys.stderr)
     
     # Summary
-    print(f"\n✓ Complete! ({len(all_signals['knife_catch'])} KC + {len(all_signals['trend_momentum'])} TM + {len(all_signals['day_trade'])} DT + {len(consensus_signals)} consensus)\n", file=sys.stderr)
+    print(f"\n✓ Complete! ({len(all_signals['knife_catch'])} KC + {len(all_signals['trend_momentum'])} TM + {len(all_signals['day_trade'])} DT)\n", file=sys.stderr)
 
 
 if __name__ == "__main__":

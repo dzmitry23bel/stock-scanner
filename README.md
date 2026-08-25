@@ -20,7 +20,7 @@ pip install -r requirements.txt
 python run_all_scanners.py --top 50
 ```
 
-The master report also shows **consensus signals**: tickers found by at least two scanners.
+The master report shows each scanner separately with its signal and trade levels.
 
 ## Strategies
 
@@ -70,7 +70,7 @@ Classifications: `LONG`, `SHORT`, `WAIT`. Intraday Yahoo Finance data is best-ef
 
 ## Master Scanner
 
-[`run_all_scanners.py`](run_all_scanners.py) is the recommended entry point. It imports all three strategies directly, ranks each result, and prints separate tables plus consensus signals.
+[`run_all_scanners.py`](run_all_scanners.py) is the recommended entry point. It imports all three strategies directly, ranks each result, and prints separate tables with signal and trade levels.
 
 ```bash
 python run_all_scanners.py              # top 50 per scanner
@@ -78,7 +78,7 @@ python run_all_scanners.py --top 20     # top 20 per scanner
 python run_all_scanners.py --catalysts catalysts.json
 ```
 
-`--top` controls the number of results retained from each strategy. The report displays up to 15 rows per strategy and up to 20 consensus rows so the terminal remains readable.
+`--top` controls the number of results retained from each strategy. The report displays up to 15 rows per strategy so the terminal remains readable.
 
 ## Configuration
 
@@ -110,7 +110,7 @@ stock-scanner/
 │   ├── knife_catch_scanner.py        # Reversal scanner
 │   ├── long_term_scanner.py     # Growth scanner
 │   └── short_term_scanner.py          # Intraday/day-trade scanner
-├── run_all_scanners.py       # Unified report and consensus ranking
+├── run_all_scanners.py       # Unified report for all strategies
 ├── run_daily_scan.py         # Knife-catch logging automation
 ├── scanner.py                # Compatibility CLI wrapper
 ├── short_term_scanner.py              # Compatibility CLI wrapper
@@ -130,7 +130,7 @@ The three root-level scanner files are intentionally small compatibility wrapper
 
 [`daily-scan.yml`](.github/workflows/daily-scan.yml) runs automatically on weekdays at 10:30 America/New_York, approximately one hour after the NYSE open. It handles daylight-saving time by using two UTC cron slots and runs only when the NYSE calendar is open. A manual run is also available from the Actions tab.
 
-Each successful run saves a timestamped Markdown report and JSON snapshot under [`scan_results/ci/`](scan_results/ci/), then commits them back to the repository. Every scanner row includes the ticker, score, signal, Entry, Stop, TP1, and TP2 when an actionable plan exists.
+Each successful run saves timestamped Markdown, JSON, and standalone HTML reports under [`scan_results/ci/`](scan_results/ci/), then commits them back to the repository. The HTML report contains only actionable signals such as `LONG CANDIDATE`, `BUY DIP`, `MOMENTUM BUY`, `LONG`, and `SHORT`; `WAIT`, `WATCH`, and `AVOID` are excluded to keep it readable. Every listed row includes the ticker, score, signal, Entry, Stop, TP1, and TP2 when an actionable plan exists.
 
 Run a single logged knife-catch scan:
 
@@ -147,7 +147,7 @@ launchctl list | grep knife-catch
 launchctl unload ~/Library/LaunchAgents/com.user.knife-catch-scanner.plist
 ```
 
-Reports and CSV history are written to `scan_results/`. Master reports are stored separately under `scan_results/master/` for local runs and `scan_results/ci/` for GitHub Actions runs.
+Reports and CSV history are written to `scan_results/`. Master Markdown, JSON, and HTML reports are stored separately under `scan_results/master/` for local runs and `scan_results/ci/` for GitHub Actions runs.
 
 ## Data and Risk Notes
 
