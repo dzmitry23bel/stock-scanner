@@ -28,6 +28,8 @@ jobs:
 
       - name: Skip outside NYSE schedule
         id: market
+        env:
+          SCHEDULE_CRON: ${{ github.event.schedule }}
         run: |
           python - <<'PY'
           import os
@@ -38,10 +40,14 @@ jobs:
           now = datetime.now(ZoneInfo("America/New_York"))
           calendar = mcal.get_calendar("NYSE")
           schedule = calendar.schedule(start_date=now.date(), end_date=now.date())
-          should_run = bool(not schedule.empty and now.hour == 10 and 15 <= now.minute <= 45)
+          schedule_cron = os.environ.get("SCHEDULE_CRON", "")
+          manual_run = not schedule_cron
+          is_dst = bool(now.dst())
+          expected_cron = "30 14 * * 1-5" if is_dst else "30 15 * * 1-5"
+          should_run = bool(not schedule.empty and (manual_run or schedule_cron == expected_cron))
           with open(os.environ["GITHUB_OUTPUT"], "a") as output:
               output.write(f"should_run={'true' if should_run else 'false'}\n")
-          print(f"New York time: {now.isoformat()}, NYSE open: {not schedule.empty}, run: {should_run}")
+          print(f"New York time: {now.isoformat()}, cron: {schedule_cron or 'manual'}, expected: {expected_cron}, NYSE open: {not schedule.empty}, run: {should_run}")
           PY
 
       - name: Run all scanners
