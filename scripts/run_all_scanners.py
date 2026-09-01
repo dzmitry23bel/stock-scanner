@@ -172,8 +172,17 @@ def write_history_report(all_signals: dict, report_dir: Path) -> Path:
     return report_path
 
 
+def render_pdf_report(html_path: Path) -> Path:
+    """Render the HTML report to a PDF file alongside it (for email clients that mangle HTML bodies)."""
+    from weasyprint import HTML
+
+    pdf_path = html_path.with_suffix(".pdf")
+    HTML(filename=str(html_path)).write_pdf(str(pdf_path))
+    return pdf_path
+
+
 def send_email_report(report_path: Path, all_signals: dict) -> None:
-    """Email the HTML report as an attachment via Gmail SMTP using env-provided credentials."""
+    """Email the HTML and PDF report as attachments via Gmail SMTP using env-provided credentials."""
     sender = os.environ.get("GMAIL_ADDRESS")
     app_password = os.environ.get("GMAIL_APP_PASSWORD")
     recipient = os.environ.get("REPORT_RECIPIENT") or sender
@@ -193,7 +202,9 @@ def send_email_report(report_path: Path, all_signals: dict) -> None:
     for scanner, signals in actionable.items():
         summary_lines.append(f"  {scanner}: {len(signals)}")
     summary_lines.append("")
-    summary_lines.append("Full HTML report attached.")
+    summary_lines.append("Full report attached (HTML and PDF).")
+
+    pdf_path = render_pdf_report(report_path)
 
     message = EmailMessage()
     message["Subject"] = f"Master Scanner Report - {total} active signals"
@@ -205,6 +216,12 @@ def send_email_report(report_path: Path, all_signals: dict) -> None:
         maintype="text",
         subtype="html",
         filename=report_path.name,
+    )
+    message.add_attachment(
+        pdf_path.read_bytes(),
+        maintype="application",
+        subtype="pdf",
+        filename=pdf_path.name,
     )
 
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:

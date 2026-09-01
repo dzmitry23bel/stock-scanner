@@ -3,3 +3,4 @@ pandas>=2.0
 numpy>=1.24
 rich>=13.0
 pandas_market_calendars>=4.4
+weasyprint>=62.0

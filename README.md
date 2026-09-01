@@ -135,7 +135,7 @@ Each successful run saves timestamped Markdown, JSON, and standalone HTML report
 
 ### Email the HTML report
 
-The workflow also emails the HTML report as an attachment via Gmail SMTP after each run. To enable it, add these repository secrets under Settings → Secrets and variables → Actions:
+The workflow also emails the report via Gmail SMTP after each run, attaching both the HTML file and a rendered PDF (HTML often renders poorly in email clients, so the PDF is the more reliable view). To enable it, add these repository secrets under Settings → Secrets and variables → Actions:
 
 - `GMAIL_ADDRESS` — the sending Gmail address (requires 2-Step Verification enabled).
 - `GMAIL_APP_PASSWORD` — a 16-character [App Password](https://myaccount.google.com/apppasswords) generated for that account (not your normal Gmail password).
