@@ -15,8 +15,11 @@ from __future__ import annotations
 import argparse
 import html
 import json
+import os
+import smtplib
 import sys
 from datetime import datetime
+from email.message import EmailMessage
 from pathlib import Path
 from typing import Optional
 
@@ -167,6 +170,47 @@ def write_history_report(all_signals: dict, report_dir: Path) -> Path:
         },
     }, indent=2, ensure_ascii=False) + "\n")
     return report_path
+
+
+def send_email_report(report_path: Path, all_signals: dict) -> None:
+    """Email the HTML report as an attachment via Gmail SMTP using env-provided credentials."""
+    sender = os.environ.get("GMAIL_ADDRESS")
+    app_password = os.environ.get("GMAIL_APP_PASSWORD")
+    recipient = os.environ.get("REPORT_RECIPIENT") or sender
+
+    if not sender or not app_password or not recipient:
+        print(
+            "Email requested (--email) but GMAIL_ADDRESS/GMAIL_APP_PASSWORD "
+            "(and optionally REPORT_RECIPIENT) are not set. Aborting send.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    actionable = active_signals(all_signals)
+    total = sum(len(signals) for signals in actionable.values())
+    summary_lines = [f"Master Scanner Report - {datetime.now().astimezone().strftime('%Y-%m-%d %H:%M %Z')}", ""]
+    summary_lines.append(f"Active signals: {total}")
+    for scanner, signals in actionable.items():
+        summary_lines.append(f"  {scanner}: {len(signals)}")
+    summary_lines.append("")
+    summary_lines.append("Full HTML report attached.")
+
+    message = EmailMessage()
+    message["Subject"] = f"Master Scanner Report - {total} active signals"
+    message["From"] = sender
+    message["To"] = recipient
+    message.set_content("\n".join(summary_lines))
+    message.add_attachment(
+        report_path.read_bytes(),
+        maintype="text",
+        subtype="html",
+        filename=report_path.name,
+    )
+
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
+        smtp.login(sender, app_password)
+        smtp.send_message(message)
+    print(f"Emailed report to {recipient}", file=sys.stderr)
 
 
 def get_knife_catch_signals(top_n: int = 50, catalysts: Optional[str] = None) -> list[dict]:
@@ -413,6 +457,7 @@ def main():
     parser.add_argument("--top", type=int, default=50, help="Top N results per scanner")
     parser.add_argument("--catalysts", type=str, help="Path to catalysts JSON file")
     parser.add_argument("--report-dir", type=Path, default=DEFAULT_REPORT_DIR, help="Directory for dated Markdown and JSON reports")
+    parser.add_argument("--email", action="store_true", help="Email the HTML report via Gmail SMTP (needs GMAIL_ADDRESS/GMAIL_APP_PASSWORD env vars)")
     
     args = parser.parse_args()
     
@@ -431,6 +476,9 @@ def main():
     html_path = write_html_report(all_signals, args.report_dir)
     print(f"Report saved to: {report_path}", file=sys.stderr)
     print(f"HTML report saved to: {html_path}", file=sys.stderr)
+
+    if args.email:
+        send_email_report(html_path, all_signals)
     
     # Summary
     print(f"\n✓ Complete! ({len(all_signals['knife_catch'])} KC + {len(all_signals['trend_momentum'])} TM + {len(all_signals['day_trade'])} DT)\n", file=sys.stderr)

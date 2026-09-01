@@ -133,6 +133,16 @@ The root-level scanner files are CLI entry points. New code should import implem
 
 Each successful run saves timestamped Markdown, JSON, and standalone HTML reports under `reports/ci/`, then commits them back to the repository. The HTML report contains only actionable signals such as `LONG CANDIDATE`, `BUY DIP`, `MOMENTUM BUY`, `LONG`, and `SHORT`; `WAIT`, `WATCH`, and `AVOID` are excluded to keep it readable. Every listed row includes the ticker, score, signal, Entry, Stop, TP1, and TP2 when an actionable plan exists.
 
+### Email the HTML report
+
+The workflow also emails the HTML report as an attachment via Gmail SMTP after each run. To enable it, add these repository secrets under Settings → Secrets and variables → Actions:
+
+- `GMAIL_ADDRESS` — the sending Gmail address (requires 2-Step Verification enabled).
+- `GMAIL_APP_PASSWORD` — a 16-character [App Password](https://myaccount.google.com/apppasswords) generated for that account (not your normal Gmail password).
+- `REPORT_RECIPIENT` — optional; the destination address. Defaults to `GMAIL_ADDRESS` if omitted.
+
+Locally, run `python scripts/run_all_scanners.py --email` with the same three variables exported in your shell to test delivery.
+
 Run a single logged knife-catch scan:
 
 ```bash

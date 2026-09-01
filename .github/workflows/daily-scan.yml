@@ -52,7 +52,11 @@ jobs:
 
       - name: Run all scanners
         if: steps.market.outputs.should_run == 'true'
-        run: python scripts/run_all_scanners.py --top 50 --report-dir reports/ci
+        env:
+          GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          REPORT_RECIPIENT: ${{ secrets.REPORT_RECIPIENT }}
+        run: python scripts/run_all_scanners.py --top 50 --report-dir reports/ci --email
 
       - name: Publish dated report
         if: steps.market.outputs.should_run == 'true'
