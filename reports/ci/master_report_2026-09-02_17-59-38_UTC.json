@@ -1,0 +1,1511 @@
+{
+  "generated_at": "2026-09-02T17:59:38.837588+00:00",
+  "scanners": {
+    "knife_catch": [
+      {
+        "ticker": "ASML",
+        "score": 80,
+        "scanner": "knife_catch",
+        "signal": "🟢 LONG CANDIDATE",
+        "entry": 1673.1810302734375,
+        "stop": 1581.902587890625,
+        "tp1": 1764.45947265625,
+        "tp2": 1832.9183044433594
+      },
+      {
+        "ticker": "GOOGL",
+        "score": 77,
+        "scanner": "knife_catch",
+        "signal": "🟢 LONG CANDIDATE",
+        "entry": 337.84100341796875,
+        "stop": 325.0295628138951,
+        "tp1": 350.6524440220424,
+        "tp2": 360.26102447509766
+      },
+      {
+        "ticker": "ETN",
+        "score": 77,
+        "scanner": "knife_catch",
+        "signal": "🟢 LONG CANDIDATE",
+        "entry": 389.8699951171875,
+        "stop": 364.28356497628346,
+        "tp1": 415.45642525809154,
+        "tp2": 434.64624786376953
+      },
+      {
+        "ticker": "NVO",
+        "score": 75,
+        "scanner": "knife_catch",
+        "signal": "🟢 LONG CANDIDATE",
+        "entry": 46.77000045776367,
+        "stop": 44.242825474303906,
+        "tp1": 49.29717544122344,
+        "tp2": 51.19255667881826
+      },
+      {
+        "ticker": "PWR",
+        "score": 75,
+        "scanner": "knife_catch",
+        "signal": "🟢 LONG CANDIDATE",
+        "entry": 610.75,
+        "stop": 560.270002092634,
+        "tp1": 661.229997907366,
+        "tp2": 699.0899963378906
+      },
+      {
+        "ticker": "FIX",
+        "score": 72,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 1556.10498046875,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "ANET",
+        "score": 72,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 184.52000427246094,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "TSM",
+        "score": 72,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 412.57501220703125,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "ARM",
+        "score": 72,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 233.14999389648438,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "SE",
+        "score": 72,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 112.5,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "LLY",
+        "score": 70,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 1163.50244140625,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "VRT",
+        "score": 70,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 255.42999267578125,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "MU",
+        "score": 70,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 946.3499755859375,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "SNDK",
+        "score": 70,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 1538.5,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "KLAC",
+        "score": 70,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 171.8498992919922,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "GEV",
+        "score": 70,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 915.8800048828125,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "NTAP",
+        "score": 69,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 182.89999389648438,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "QCOM",
+        "score": 68,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 169.5749969482422,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "AVGO",
+        "score": 67,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 367.4150085449219,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "AMZN",
+        "score": 67,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 254.9510040283203,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "SRRK",
+        "score": 65,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 55.814998626708984,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "CVS",
+        "score": 65,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 98.12000274658203,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "LRCX",
+        "score": 65,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 287.5950012207031,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "TXN",
+        "score": 65,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 255.50999450683594,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "CAT",
+        "score": 65,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 784.1500244140625,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "GE",
+        "score": 65,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 330.7349853515625,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "DNTH",
+        "score": 64,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 106.0999984741211,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "CRWD",
+        "score": 62,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 202.4499969482422,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "ADI",
+        "score": 62,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 355.1700134277344,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "NET",
+        "score": 62,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 270.7900085449219,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "SHOP",
+        "score": 62,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 140.49000549316406,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "TNGX",
+        "score": 62,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 22.479999542236328,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "RDW",
+        "score": 62,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 10.265000343322754,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "CRVS",
+        "score": 62,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 14.09000015258789,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "AAPL",
+        "score": 60.320808101899914,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 325.9549865722656,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "MRVL",
+        "score": 60,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 206.4600067138672,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "META",
+        "score": 60,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 592.386474609375,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "ISRG",
+        "score": 60,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 371.3299865722656,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "HIMS",
+        "score": 60,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 29.125,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "SMCI",
+        "score": 60,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 36.375,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "ON",
+        "score": 60,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 72.72000122070312,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "MPWR",
+        "score": 60,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 1228.45751953125,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "FTNT",
+        "score": 60,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 152.97999572753906,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "OKLO",
+        "score": 60,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 39.02000045776367,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "TKO",
+        "score": 60,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 188.39999389648438,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "WDAY",
+        "score": 60,
+        "scanner": "knife_catch",
+        "signal": "🟡 WAIT",
+        "entry": 199.58999633789062,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "HPE",
+        "score": 59,
+        "scanner": "knife_catch",
+        "signal": "🔴 AVOID",
+        "entry": 50.130001068115234,
+        "stop": 45.40078680855887,
+        "tp1": 54.8592153276716,
+        "tp2": 58.40612602233887
+      },
+      {
+        "ticker": "AXGN",
+        "score": 57.673410291059746,
+        "scanner": "knife_catch",
+        "signal": "🔴 AVOID",
+        "entry": 48.849998474121094,
+        "stop": 44.29999814714704,
+        "tp1": 53.399998801095144,
+        "tp2": 56.812499046325684
+      },
+      {
+        "ticker": "CORT",
+        "score": 57,
+        "scanner": "knife_catch",
+        "signal": "🔴 AVOID",
+        "entry": 110.56999969482422,
+        "stop": 101.90499768938336,
+        "tp1": 119.23500170026507,
+        "tp2": 125.7337532043457
+      },
+      {
+        "ticker": "SYK",
+        "score": 57,
+        "scanner": "knife_catch",
+        "signal": "🔴 AVOID",
+        "entry": 314.3699951171875,
+        "stop": 295.9165693010603,
+        "tp1": 332.8234209333147,
+        "tp2": 346.66349029541016
+      }
+    ],
+    "trend_momentum": [
+      {
+        "ticker": "SRRK",
+        "score": 100,
+        "scanner": "trend_momentum",
+        "signal": "BUY DIP",
+        "entry": 55.814998626708984,
+        "stop": 50.94858496529715,
+        "tp1": 60.68141228812082,
+        "tp2": 64.33122253417969
+      },
+      {
+        "ticker": "LLY",
+        "score": 100,
+        "scanner": "trend_momentum",
+        "signal": "BUY DIP",
+        "entry": 1163.3900146484375,
+        "stop": 1088.264137883488,
+        "tp1": 1238.515891413387,
+        "tp2": 1294.860298987099
+      },
+      {
+        "ticker": "ABBV",
+        "score": 100,
+        "scanner": "trend_momentum",
+        "signal": "BUY DIP",
+        "entry": 260.216796875,
+        "stop": 249.0739462716239,
+        "tp1": 271.35964747837613,
+        "tp2": 279.7167854309082
+      },
+      {
+        "ticker": "AAPL",
+        "score": 95,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 325.95001220703125,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "ANET",
+        "score": 90,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 184.47999572753906,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "AMZN",
+        "score": 90,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 254.97500610351562,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "ASML",
+        "score": 90,
+        "scanner": "trend_momentum",
+        "signal": "BUY DIP",
+        "entry": 1674.2049560546875,
+        "stop": 1582.926513671875,
+        "tp1": 1765.4833984375,
+        "tp2": 1833.9422302246094
+      },
+      {
+        "ticker": "MRK",
+        "score": 90,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 150.99029541015625,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "NVO",
+        "score": 90,
+        "scanner": "trend_momentum",
+        "signal": "BUY DIP",
+        "entry": 46.75,
+        "stop": 44.222825016540234,
+        "tp1": 49.277174983459766,
+        "tp2": 51.17255622105459
+      },
+      {
+        "ticker": "TMO",
+        "score": 90,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 606.47998046875,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "FTNT",
+        "score": 90,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 152.93499755859375,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "AXGN",
+        "score": 90,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 48.849998474121094,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "NVDA",
+        "score": 85,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 224.75999450683594,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "CGEM",
+        "score": 85,
+        "scanner": "trend_momentum",
+        "signal": "WAIT",
+        "entry": 22.030000686645508,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "GILD",
+        "score": 85,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 149.69000244140625,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "AMGN",
+        "score": 85,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 439.75,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "BMY",
+        "score": 85,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 67.36499786376953,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "MU",
+        "score": 85,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 946.55078125,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "XOM",
+        "score": 85,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 163.61000061035156,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "EOG",
+        "score": 85,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 148.35000610351562,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "TTE",
+        "score": 85,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 90.75,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "SE",
+        "score": 85,
+        "scanner": "trend_momentum",
+        "signal": "BUY DIP",
+        "entry": 112.5,
+        "stop": 103.84857068743024,
+        "tp1": 121.15142931256976,
+        "tp2": 127.64000129699707
+      },
+      {
+        "ticker": "CRNX",
+        "score": 80,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 84.94999694824219,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "CORT",
+        "score": 80,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 110.56999969482422,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "GOOGL",
+        "score": 80,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 337.9700012207031,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "MSFT",
+        "score": 80,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 497.7300109863281,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "TSM",
+        "score": 80,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 412.5226135253906,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "CRWD",
+        "score": 80,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 202.4199981689453,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "VRTX",
+        "score": 80,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 553.6099853515625,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "RPRX",
+        "score": 80,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 62.47999954223633,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "CVS",
+        "score": 80,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 98.11000061035156,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "QCOM",
+        "score": 80,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 169.5926971435547,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "SNOW",
+        "score": 80,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 307.5299987792969,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "NET",
+        "score": 80,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 270.6050109863281,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "UBER",
+        "score": 80,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 76.8550033569336,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "DE",
+        "score": 80,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 683.510009765625,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "CVX",
+        "score": 80,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 211.99000549316406,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "DLO",
+        "score": 80,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 15.46500015258789,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "PANW",
+        "score": 75,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 322.9649963378906,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "DHR",
+        "score": 75,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 210.16250610351562,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "MRNA",
+        "score": 75,
+        "scanner": "trend_momentum",
+        "signal": "WAIT",
+        "entry": 149.60499572753906,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "SNDK",
+        "score": 75,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 1539.010009765625,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "DELL",
+        "score": 75,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 462.05950927734375,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "SHOP",
+        "score": 75,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 140.50999450683594,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "COP",
+        "score": 75,
+        "scanner": "trend_momentum",
+        "signal": "WAIT",
+        "entry": 136.8000030517578,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "PLTR",
+        "score": 70,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 170.1999969482422,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "FIX",
+        "score": 70,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 1554.9300537109375,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "AMD",
+        "score": 70,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 457.0653991699219,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "MCK",
+        "score": 70,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 920.780029296875,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "LRCX",
+        "score": 70,
+        "scanner": "trend_momentum",
+        "signal": "WATCH",
+        "entry": 287.7200012207031,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      }
+    ],
+    "day_trade": [
+      {
+        "ticker": "VRTX",
+        "score": 73,
+        "scanner": "day_trade",
+        "signal": "LONG",
+        "entry": 552.370221383231,
+        "stop": 536.4727900913783,
+        "tp1": 568.2676526750837,
+        "tp2": 586.8146558489118
+      },
+      {
+        "ticker": "CRNX",
+        "score": 72,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 84.94999694824219,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "NVDA",
+        "score": 67,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 224.8000030517578,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "ABBV",
+        "score": 67,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 260.20001220703125,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "BMY",
+        "score": 67,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 67.35919952392578,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "DHR",
+        "score": 67,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 210.02499389648438,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "UBER",
+        "score": 67,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 76.8499984741211,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "EOG",
+        "score": 67,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 148.38999938964844,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "TTE",
+        "score": 67,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 90.74500274658203,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "DELL",
+        "score": 62,
+        "scanner": "day_trade",
+        "signal": "LONG",
+        "entry": 460.27964957101005,
+        "stop": 428.7154004778181,
+        "tp1": 491.843898664202,
+        "tp2": 528.6688559395926
+      },
+      {
+        "ticker": "REGN",
+        "score": 61,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 850.2999877929688,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "AMGN",
+        "score": 61,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 439.7298889160156,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "RPRX",
+        "score": 61,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 62.47999954223633,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "MCK",
+        "score": 61,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 921.1649780273438,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "CVX",
+        "score": 61,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 212.00999450683594,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "DLO",
+        "score": 61,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 15.468999862670898,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "NVO",
+        "score": 60,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 46.755001068115234,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "MU",
+        "score": 60,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 946.6702880859375,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "TMO",
+        "score": 59,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 606.3900146484375,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "SRRK",
+        "score": 57,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 55.814998626708984,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "MSFT",
+        "score": 57,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 497.7300109863281,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "SMCI",
+        "score": 57,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 36.39500045776367,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "XOM",
+        "score": 57,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 163.61000061035156,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "AXGN",
+        "score": 57,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 48.81999969482422,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "PLTR",
+        "score": 56,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 170.25,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "CEG",
+        "score": 56,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 284.32501220703125,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "CGEM",
+        "score": 55,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 22.030000686645508,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "MRK",
+        "score": 55,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 150.97999572753906,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "ALNY",
+        "score": 55,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 264.79998779296875,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "DE",
+        "score": 55,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 683.5599975585938,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "COP",
+        "score": 55,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 136.7899932861328,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "AAPL",
+        "score": 54,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 325.94500732421875,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "BSX",
+        "score": 54,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 49.3849983215332,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "SNDK",
+        "score": 54,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 1539.010009765625,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "QCOM",
+        "score": 54,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 169.61000061035156,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "TKO",
+        "score": 54,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 188.39999389648438,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "LLY",
+        "score": 53,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 1163.3900146484375,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "SHOP",
+        "score": 53,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 140.50999450683594,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "GILD",
+        "score": 51,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 149.67999267578125,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "NOW",
+        "score": 51,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 137.09500122070312,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "ADBE",
+        "score": 51,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 282.1300048828125,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "COIN",
+        "score": 50,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 176.8350067138672,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "META",
+        "score": 49,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 592.5499877929688,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "TMDX",
+        "score": 48,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 83.82499694824219,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "VST",
+        "score": 48,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 141.22500610351562,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "CVS",
+        "score": 47,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 98.13500213623047,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "ASML",
+        "score": 46,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 1674.22998046875,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "SNPS",
+        "score": 45,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 413.9649963378906,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "DUOL",
+        "score": 45,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 156.0800018310547,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      },
+      {
+        "ticker": "CRM",
+        "score": 45,
+        "scanner": "day_trade",
+        "signal": "WAIT",
+        "entry": 255.3300018310547,
+        "stop": null,
+        "tp1": null,
+        "tp2": null
+      }
+    ]
+  }
+}
