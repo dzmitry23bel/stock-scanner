@@ -420,7 +420,19 @@ def print_results(all_signals: dict) -> None:
         console.print("")
         
         # Day Trading
-        if all_signals.get("day_trade"):
+            if all_signals.get("master_entry"):
+            console.print("[bold magenta]🏆 MASTER ENTRY SCORE[/bold magenta] (cross-scanner ranking)")
+            table = Table(show_header=True, header_style="bold")
+            for col in ("Ticker", "Score", "Status", "Agreement", "R:R", "Entry", "Stop", "TP1", "TP2"):
+                table.add_column(col, justify="right" if col not in ("Ticker", "Status") else "left")
+            for signal in all_signals["master_entry"][:15]:
+                table.add_row(signal["ticker"], f'{signal["score"]:.1f}', signal["signal"], f'{signal.get("agreement", 0):.0f}%', f'{signal.get("rr", 0):.1f}', format_level(signal.get("entry")), format_level(signal.get("stop")), format_level(signal.get("tp1")), format_level(signal.get("tp2")))
+            console.print(table)
+        else:
+            console.print("[dim]No master entry scores[/dim]")
+        console.print("")
+
+    if all_signals.get("day_trade"):
             console.print("[bold cyan]⚡ DAY TRADING SCANNER[/bold cyan] (Leveraged - 1-5 days)")
             table = Table(show_header=True, header_style="bold")
             table.add_column("Ticker", style="cyan")
