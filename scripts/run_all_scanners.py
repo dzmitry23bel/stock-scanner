@@ -23,6 +23,8 @@ from email.message import EmailMessage
 from pathlib import Path
 from typing import Optional
 
+from scanners.master_entry import build_master_scores
+
 # Add project root to path for package imports
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -61,6 +63,8 @@ ACTIVE_SIGNALS = {
     "MOMENTUM BUY",
     "LONG",
     "SHORT",
+    "ENTRY",
+    "SETUP",
 }
 
 
@@ -86,6 +90,7 @@ def write_html_report(all_signals: dict, report_dir: Path) -> Path:
         "knife_catch": ("Knife Catch", "Reversal setups", "gold"),
         "trend_momentum": ("Trend / Momentum", "Growth setups", "green"),
         "day_trade": ("Day Trading", "Short-term setups", "blue"),
+        "master_entry": ("Master Entry", "Cross-scanner setups", "green"),
     }
     for scanner, signals in actionable.items():
         title, subtitle, color = labels.get(scanner, (scanner, "", "green"))
@@ -286,7 +291,7 @@ def get_trend_momentum_signals(top_n: int = 50, catalysts: Optional[str] = None)
         print("Scanning for trend/momentum opportunities...", file=sys.stderr)
         
         scores = []
-        for ticker in tickers[:100]:  # Sample for speed
+        for ticker in tickers:
             result = analyze(ticker, catalysts_dict.get(ticker))
             if result is None:
                 continue
@@ -329,7 +334,7 @@ def get_day_trade_signals(top_n: int = 50, catalysts: Optional[str] = None) -> l
         print("Scanning for day trading opportunities...", file=sys.stderr)
         
         scores = []
-        for ticker in tickers[:100]:  # Sample for speed
+        for ticker in tickers:
             result = analyze_day(ticker, catalysts_dict.get(ticker))
             if result is None:
                 continue
@@ -417,6 +422,19 @@ def print_results(all_signals: dict) -> None:
             console.print("[dim]No signals[/dim]")
         console.print("")
         
+        # Master Entry
+        if all_signals.get("master_entry"):
+            console.print("[bold magenta]🏆 MASTER ENTRY SCORE[/bold magenta] (cross-scanner ranking)")
+            table = Table(show_header=True, header_style="bold")
+            for col in ("Ticker", "Score", "Status", "Agreement", "R:R", "Entry", "Stop", "TP1", "TP2"):
+                table.add_column(col, justify="right" if col not in ("Ticker", "Status") else "left")
+            for signal in all_signals["master_entry"][:15]:
+                table.add_row(signal["ticker"], f'{signal["score"]:.1f}', signal["signal"], f'{signal.get("agreement", 0):.0f}%', f'{signal.get("rr", 0):.1f}', format_level(signal.get("entry")), format_level(signal.get("stop")), format_level(signal.get("tp1")), format_level(signal.get("tp2")))
+            console.print(table)
+        else:
+            console.print("[dim]No master entry scores[/dim]")
+        console.print("")
+
         # Day Trading
         if all_signals.get("day_trade"):
             console.print("[bold cyan]⚡ DAY TRADING SCANNER[/bold cyan] (Leveraged - 1-5 days)")
@@ -428,15 +446,13 @@ def print_results(all_signals: dict) -> None:
             table.add_column("Stop")
             table.add_column("TP1")
             table.add_column("TP2")
-            
             for signal in all_signals["day_trade"][:15]:
                 table.add_row(signal['ticker'], f"{signal['score']:.1f}", signal.get('signal', '-'), format_level(signal.get('entry')), format_level(signal.get('stop')), format_level(signal.get('tp1')), format_level(signal.get('tp2')))
-            
             console.print(table)
         else:
             console.print("[dim]No signals[/dim]")
         console.print("")
-        
+
     else:
         # Plain text output
         print("\n" + "=" * 100)
@@ -487,7 +503,19 @@ def main():
         "day_trade": get_day_trade_signals(args.top, args.catalysts),
     }
     
-    # Print
+    master_scores = build_master_scores(all_signals)
+    all_signals["master_entry"] = [
+        {
+            "ticker": row["ticker"], "score": row["master_score"],
+            "scanner": "master_entry", "signal": row["status"],
+            "entry": row["entry"], "stop": row["stop"],
+            "tp1": row["tp1"], "tp2": row["tp2"],
+            "rr": row["rr"], "agreement": row["agreement"],
+        }
+        for row in master_scores[:args.top]
+    ]
+
+    # Print specialist results plus the cross-scanner master ranking.
     print_results(all_signals)
     report_path = write_history_report(all_signals, args.report_dir)
     html_path = write_html_report(all_signals, args.report_dir)
