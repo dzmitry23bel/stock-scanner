@@ -23,12 +23,12 @@ from email.message import EmailMessage
 from pathlib import Path
 from typing import Optional
 
-from scanners.master_entry import build_master_scores
-from scanners.analyst_targets import fetch_analyst_targets
-
-# Add project root to path for package imports
+# Add project root to path before importing the scanners package.
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
+
+from scanners.master_entry import build_master_scores
+from scanners.analyst_targets import fetch_analyst_targets
 
 try:
     from rich.console import Console
