@@ -331,7 +331,7 @@ def get_day_trade_signals(top_n: int = 50, catalysts: Optional[str] = None) -> l
         print("Scanning for day trading opportunities...", file=sys.stderr)
         
         scores = []
-        for ticker in tickers[:100]:  # Sample for speed
+        for ticker in tickers:
             result = analyze_day(ticker, catalysts_dict.get(ticker))
             if result is None:
                 continue
@@ -419,8 +419,8 @@ def print_results(all_signals: dict) -> None:
             console.print("[dim]No signals[/dim]")
         console.print("")
         
-        # Day Trading
-            if all_signals.get("master_entry"):
+        # Master Entry
+        if all_signals.get("master_entry"):
             console.print("[bold magenta]🏆 MASTER ENTRY SCORE[/bold magenta] (cross-scanner ranking)")
             table = Table(show_header=True, header_style="bold")
             for col in ("Ticker", "Score", "Status", "Agreement", "R:R", "Entry", "Stop", "TP1", "TP2"):
@@ -428,6 +428,11 @@ def print_results(all_signals: dict) -> None:
             for signal in all_signals["master_entry"][:15]:
                 table.add_row(signal["ticker"], f'{signal["score"]:.1f}', signal["signal"], f'{signal.get("agreement", 0):.0f}%', f'{signal.get("rr", 0):.1f}', format_level(signal.get("entry")), format_level(signal.get("stop")), format_level(signal.get("tp1")), format_level(signal.get("tp2")))
             console.print(table)
+        else:
+            console.print("[dim]No master entry scores[/dim]")
+        console.print("")
+
+        # Day Trading
         else:
             console.print("[dim]No master entry scores[/dim]")
         console.print("")
