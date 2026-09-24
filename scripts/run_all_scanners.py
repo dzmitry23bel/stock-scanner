@@ -23,6 +23,8 @@ from email.message import EmailMessage
 from pathlib import Path
 from typing import Optional
 
+from scanners.master_entry import build_master_scores
+
 # Add project root to path for package imports
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -286,7 +288,7 @@ def get_trend_momentum_signals(top_n: int = 50, catalysts: Optional[str] = None)
         print("Scanning for trend/momentum opportunities...", file=sys.stderr)
         
         scores = []
-        for ticker in tickers[:100]:  # Sample for speed
+        for ticker in tickers:
             result = analyze(ticker, catalysts_dict.get(ticker))
             if result is None:
                 continue
@@ -487,7 +489,19 @@ def main():
         "day_trade": get_day_trade_signals(args.top, args.catalysts),
     }
     
-    # Print
+    master_scores = build_master_scores(all_signals)
+    all_signals["master_entry"] = [
+        {
+            "ticker": row["ticker"], "score": row["master_score"],
+            "scanner": "master_entry", "signal": row["status"],
+            "entry": row["entry"], "stop": row["stop"],
+            "tp1": row["tp1"], "tp2": row["tp2"],
+            "rr": row["rr"], "agreement": row["agreement"],
+        }
+        for row in master_scores[:args.top]
+    ]
+
+    # Print specialist results plus the cross-scanner master ranking.
     print_results(all_signals)
     report_path = write_history_report(all_signals, args.report_dir)
     html_path = write_html_report(all_signals, args.report_dir)
