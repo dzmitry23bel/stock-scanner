@@ -63,6 +63,8 @@ ACTIVE_SIGNALS = {
     "MOMENTUM BUY",
     "LONG",
     "SHORT",
+    "ENTRY",
+    "SETUP",
 }
 
 
@@ -88,6 +90,7 @@ def write_html_report(all_signals: dict, report_dir: Path) -> Path:
         "knife_catch": ("Knife Catch", "Reversal setups", "gold"),
         "trend_momentum": ("Trend / Momentum", "Growth setups", "green"),
         "day_trade": ("Day Trading", "Short-term setups", "blue"),
+        "master_entry": ("Master Entry", "Cross-scanner setups", "green"),
     }
     for scanner, signals in actionable.items():
         title, subtitle, color = labels.get(scanner, (scanner, "", "green"))
