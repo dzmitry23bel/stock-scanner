@@ -48,7 +48,7 @@ def risk_reward(signal: dict[str, Any]) -> float:
     return reward / risk if risk else 0.0
 
 
-def build_master_scores(signals_by_scanner: dict[str, list[dict[str, Any]]]) -> list[dict[str, Any]]:
+def analyst_target_score(target: dict[str, Any] | None) -> float:\n    """Convert median-target upside into a bounded 0..100 enrichment score.\n\n    Missing/invalid targets are neutral (50), so analyst data cannot manufacture a signal.\n    """\n    if not target or not target.get("target_available"):\n        return 50.0\n    upside = _num(target.get("upside_pct"), 0.0)\n    return _clip(50.0 + upside * 1.5)\n\n\ndef build_master_scores(\n    signals_by_scanner: dict[str, list[dict[str, Any]]],\n    analyst_targets: dict[str, dict[str, Any]] | None = None,\n) -> list[dict[str, Any]]:
     """Combine scanner evidence into one score per ticker.
 
     Weights:

@@ -24,6 +24,7 @@ from pathlib import Path
 from typing import Optional
 
 from scanners.master_entry import build_master_scores
+from scanners.analyst_targets import fetch_analyst_targets
 
 # Add project root to path for package imports
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -426,10 +427,10 @@ def print_results(all_signals: dict) -> None:
         if all_signals.get("master_entry"):
             console.print("[bold magenta]🏆 MASTER ENTRY SCORE[/bold magenta] (cross-scanner ranking)")
             table = Table(show_header=True, header_style="bold")
-            for col in ("Ticker", "Score", "Status", "Agreement", "R:R", "Entry", "Stop", "TP1", "TP2"):
+            for col in ("Ticker", "Score", "Status", "Agreement", "R:R", "Analyst", "Entry", "Stop", "TP1", "TP2"):
                 table.add_column(col, justify="right" if col not in ("Ticker", "Status") else "left")
             for signal in all_signals["master_entry"][:15]:
-                table.add_row(signal["ticker"], f'{signal["score"]:.1f}', signal["signal"], f'{signal.get("agreement", 0):.0f}%', f'{signal.get("rr", 0):.1f}', format_level(signal.get("entry")), format_level(signal.get("stop")), format_level(signal.get("tp1")), format_level(signal.get("tp2")))
+                table.add_row(signal["ticker"], f'{signal["score"]:.1f}', signal["signal"], f'{signal.get("agreement", 0):.0f}%', f'{signal.get("rr", 0):.1f}', "-" if signal.get("analyst_upside_pct") is None else f'{signal["analyst_upside_pct"]:+.0f}%', format_level(signal.get("entry")), format_level(signal.get("stop")), format_level(signal.get("tp1")), format_level(signal.get("tp2")))
             console.print(table)
         else:
             console.print("[dim]No master entry scores[/dim]")
@@ -503,7 +504,8 @@ def main():
         "day_trade": get_day_trade_signals(args.top, args.catalysts),
     }
     
-    master_scores = build_master_scores(all_signals)
+    analyst_targets = fetch_analyst_targets(sorted({signal['ticker'] for signals in all_signals.values() for signal in signals}))
+    master_scores = build_master_scores(all_signals, analyst_targets)
     all_signals["master_entry"] = [
         {
             "ticker": row["ticker"], "score": row["master_score"],
@@ -511,6 +513,13 @@ def main():
             "entry": row["entry"], "stop": row["stop"],
             "tp1": row["tp1"], "tp2": row["tp2"],
             "rr": row["rr"], "agreement": row["agreement"],
+            "analyst_target": row.get("analyst_target"),
+            "analyst_mean": row.get("analyst_mean"),
+            "analyst_low": row.get("analyst_low"),
+            "analyst_high": row.get("analyst_high"),
+            "analyst_upside_pct": row.get("analyst_upside_pct"),
+            "analyst_score": row.get("analyst_score"),
+            "analyst_source": row.get("analyst_source"),
         }
         for row in master_scores[:args.top]
     ]
