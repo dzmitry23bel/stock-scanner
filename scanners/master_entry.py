@@ -158,6 +158,7 @@ def build_master_scores(
                 "ema_zone": tm.get("ema_zone"),
                 "vs_ema20": tm.get("vs_ema20"),
                 "vs_ema50": tm.get("vs_ema50"),
+                "fundamentals": tm.get("fundamentals", {}),
                 "knife_score": round(kc_score, 1),
                 "day_score": round(dt_score, 1),
                 "agreement": round(agreement, 1),
