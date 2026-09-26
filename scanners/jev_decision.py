@@ -77,9 +77,9 @@ def _state_for(row: dict[str, Any]) -> dict[str, Any]:
 
 def evaluate_candidate(row: dict[str, Any], api_key: str | None = None) -> dict[str, Any]:
     """Return Jev's structured second opinion for one master candidate."""
-    key = api_key or os.getenv("JEV_API_KEY")
+    key = api_key or os.getenv("TYPESAFE_API_KEY") or os.getenv("JEV_API_KEY")
     if not key:
-        raise RuntimeError("JEV_API_KEY is not configured")
+        raise RuntimeError("TYPESAFE_API_KEY is not configured")
 
     payload = {
         "model": JEV_MODEL,
