@@ -29,6 +29,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from scanners.master_entry import build_master_scores
 from scanners.analyst_targets import fetch_analyst_targets
+from scanners.jev_decision import evaluate_candidates
 
 try:
     from rich.console import Console
@@ -492,6 +493,8 @@ def main():
     parser.add_argument("--catalysts", type=str, help="Path to catalysts JSON file")
     parser.add_argument("--report-dir", type=Path, default=DEFAULT_REPORT_DIR, help="Directory for dated Markdown and JSON reports")
     parser.add_argument("--email", action="store_true", help="Email the HTML report via Gmail SMTP (needs GMAIL_ADDRESS/GMAIL_APP_PASSWORD env vars)")
+    parser.add_argument("--jev", action="store_true", help="Run Jev as a second-opinion decision layer (requires JEV_API_KEY)")
+    parser.add_argument("--jev-top", type=int, default=50, help="Maximum master candidates to send to Jev")
     
     args = parser.parse_args()
     
@@ -506,6 +509,13 @@ def main():
     
     analyst_targets = fetch_analyst_targets(sorted({signal['ticker'] for signals in all_signals.values() for signal in signals}))
     master_scores = build_master_scores(all_signals, analyst_targets)
+    if args.jev:
+        print(f"Running Jev second-opinion layer on up to {args.jev_top} candidates...", file=sys.stderr)
+        master_scores = evaluate_candidates(
+            master_scores,
+            max_candidates=min(args.jev_top, len(master_scores)),
+        ) + master_scores[min(args.jev_top, len(master_scores)):]
+
     all_signals["master_entry"] = [
         {
             "ticker": row["ticker"], "score": row["master_score"],
@@ -520,6 +530,12 @@ def main():
             "analyst_upside_pct": row.get("analyst_upside_pct"),
             "analyst_score": row.get("analyst_score"),
             "analyst_source": row.get("analyst_source"),
+            "jev_setup": row.get("jev_setup"),
+            "jev_confidence": row.get("jev_confidence"),
+            "jev_quality": row.get("jev_quality"),
+            "jev_review_probability": row.get("jev_review_probability"),
+            "jev_probabilities": row.get("jev_probabilities"),
+            "jev_error": row.get("jev_error"),
         }
         for row in master_scores[:args.top]
     ]
