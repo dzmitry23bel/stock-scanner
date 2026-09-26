@@ -80,6 +80,21 @@ python scripts/run_all_scanners.py --catalysts config/catalysts.json
 
 `--top` controls the number of results retained from each strategy. The report displays up to 15 rows per strategy so the terminal remains readable.
 
+### Jev decision layer (optional)
+
+The master scanner can optionally send each top master candidate to Jev (TypeSafe AI) for a structured second opinion. Jev returns a typed setup classification (ENTRY, SETUP, WATCH, AVOID), probabilities, a quality score, and a review probability. The deterministic scanner rules remain authoritative: Jev does not change the master score, Entry/Stop/TP levels, or hard R:R gates.
+
+Jev is called only when --jev is supplied and JEV_API_KEY is configured. The API key must be stored as an environment variable or GitHub Actions secret, never committed to the repository. The current integration uses TypeSafe's POST /v1/systemone endpoint.
+
+```bash
+export JEV_API_KEY="your-key"
+python scripts/run_all_scanners.py --top 50 --jev --jev-top 50
+```
+
+For GitHub Actions, add JEV_API_KEY under repository Settings -> Secrets and variables -> Actions. If the secret is absent, the daily workflow automatically runs the deterministic scanner without Jev.
+
+The Jev output is stored in the JSON report and shown in the master terminal table. A Jev outage fails open so the normal scanner report is still generated.
+
 ## Configuration
 
 ### Tickers
