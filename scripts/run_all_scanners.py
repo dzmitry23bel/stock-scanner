@@ -30,7 +30,6 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from scanners.master_entry import build_master_scores
 from scanners.analyst_targets import fetch_analyst_targets
 from scanners.jev_decision import evaluate_candidates
-from scanners.jev_decision import evaluate_candidates
 
 try:
     from rich.console import Console
