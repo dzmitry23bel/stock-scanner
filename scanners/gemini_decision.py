@@ -58,6 +58,11 @@ def _state_for(row: dict[str, Any]) -> dict[str, Any]:
         "master_score": row.get("master_score"),
         "deterministic_status": row.get("status"),
         "trend_score": row.get("trend_score"),
+        "business_quality_score": row.get("quality_score"),
+        "ema_timing_score": row.get("ema_timing_score"),
+        "ema_zone": row.get("ema_zone"),
+        "vs_ema20_pct": row.get("vs_ema20"),
+        "vs_ema50_pct": row.get("vs_ema50"),
         "knife_score": row.get("knife_score"),
         "day_score": row.get("day_score"),
         "agreement": row.get("agreement"),
@@ -69,6 +74,7 @@ def _state_for(row: dict[str, Any]) -> dict[str, Any]:
         "signals": row.get("signals", {}),
         "analyst_upside_pct": row.get("analyst_upside_pct"),
         "analyst_score": row.get("analyst_score"),
+        "fundamentals": row.get("fundamentals", {}),
     }
 
 
@@ -93,8 +99,16 @@ def evaluate_candidate(row: dict[str, Any], api_key: str | None = None) -> dict[
     prompt = f"""
 You are a strict second-opinion reviewer for a quantitative stock scanner.
 
-Evaluate ONLY the scanner evidence below. Do not invent news, fundamentals,
-catalysts, price data, or facts that are not supplied.
+Evaluate ONLY the scanner evidence below. Do not invent news, catalysts,
+price data, or facts that are not supplied.
+
+Pay particular attention to the distinction between:
+1. BUSINESS QUALITY: durable growth, profitability, cash generation and balance-sheet health;
+2. ENTRY TIMING: whether the price is in a sensible EMA20/EMA50 pullback zone rather than extended;
+3. CONFIRMATION: whether reversal/trend evidence supports an entry now.
+
+Do not reward a stock merely because it is associated with AI. AI exposure is useful
+only when the supplied fundamentals and price setup support it.
 
 Classify the setup:
 - ENTRY: evidence supports an actionable setup and risk/reward is acceptable.
