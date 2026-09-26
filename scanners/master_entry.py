@@ -67,11 +67,13 @@ def build_master_scores(
     """Combine scanner evidence into one score per ticker.
 
     Weights:
-      - trend/momentum quality: 30%
-      - reversal / pullback confirmation: 25%
-      - short-term confirmation: 15%
-      - cross-scanner agreement: 15%
-      - risk/reward quality: 15%
+      - business quality: 25%
+      - EMA / entry timing: 25%
+      - trend/momentum: 20%
+      - reversal / pullback confirmation: 10%
+      - cross-scanner agreement: 10%
+      - risk/reward quality: 5%
+      - analyst target enrichment: 5%
 
     WAIT/WATCH results still contribute evidence but cannot become an entry on
     score alone. A trade requires at least one actionable scanner and R:R >= 1.5.
@@ -93,6 +95,10 @@ def build_master_scores(
         tm_score = signal_strength(tm)
         kc_score = signal_strength(kc)
         dt_score = signal_strength(dt)
+        quality_score = _clip(_num(tm.get("quality_score"), 50.0))
+        ema_timing_score = _clip(_num(tm.get("ema_timing_score"), 50.0))
+        target = (analyst_targets or {}).get(ticker)
+        analyst_score = analyst_target_score(target)
 
         tm_active = tm.get("signal") in {"BUY DIP", "MOMENTUM BUY"}
         kc_active = kc.get("signal") in {"🟢 STRONG KNIFE CATCH", "🟢 LONG CANDIDATE"}
@@ -110,12 +116,16 @@ def build_master_scores(
         reversal_component = max(kc_score, 0.6 * tm_score)
         confirmation_component = dt_score
 
+        # A strong company at a bad price should not outrank a strong company
+        # that is actually in a sensible EMA pullback zone.
         master = (
-            0.30 * trend_component
-            + 0.25 * reversal_component
-            + 0.15 * confirmation_component
-            + 0.15 * agreement
-            + 0.15 * rr_component
+            0.25 * quality_score
+            + 0.25 * ema_timing_score
+            + 0.20 * trend_component
+            + 0.10 * reversal_component
+            + 0.10 * agreement
+            + 0.05 * rr_component
+            + 0.05 * analyst_score
         )
 
         # Hard gating: do not turn a high-quality stock into an entry without
@@ -143,10 +153,22 @@ def build_master_scores(
                 "master_score": round(_clip(master), 1),
                 "status": status,
                 "trend_score": round(tm_score, 1),
+                "quality_score": round(quality_score, 1),
+                "ema_timing_score": round(ema_timing_score, 1),
+                "ema_zone": tm.get("ema_zone"),
+                "vs_ema20": tm.get("vs_ema20"),
+                "vs_ema50": tm.get("vs_ema50"),
+                "fundamentals": tm.get("fundamentals", {}),
                 "knife_score": round(kc_score, 1),
                 "day_score": round(dt_score, 1),
                 "agreement": round(agreement, 1),
                 "rr": round(rr_best, 2),
+                "analyst_target": target.get("target") if target else None,
+                "analyst_mean": target.get("mean") if target else None,
+                "analyst_low": target.get("low") if target else None,
+                "analyst_high": target.get("high") if target else None,
+                "analyst_upside_pct": target.get("upside_pct") if target else None,
+                "analyst_score": round(analyst_score, 1),
                 "entry": representative.get("entry"),
                 "stop": representative.get("stop"),
                 "tp1": representative.get("tp1"),

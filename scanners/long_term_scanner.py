@@ -94,6 +94,67 @@ def classify(
     return "AVOID" if below_200 else "WATCH"
 
 
+
+def _fundamental_component(value: object, *, good: float, excellent: float, bad: float, reverse: bool = False) -> float:
+    """Map a numeric fundamental metric to 0..100; missing data is neutral."""
+    try:
+        x = float(value)
+    except (TypeError, ValueError):
+        return 50.0
+    if not np.isfinite(x):
+        return 50.0
+    if reverse:
+        if x <= good:
+            return 100.0
+        if x <= excellent:
+            return 80.0
+        if x >= bad:
+            return 15.0
+        return 50.0
+    if x >= excellent:
+        return 100.0
+    if x >= good:
+        return 80.0
+    if x <= bad:
+        return 15.0
+    return 50.0
+
+
+def fetch_fundamentals(ticker: str) -> dict:
+    """Fetch a compact fundamental snapshot from Yahoo Finance."""
+    try:
+        info = yf.Ticker(ticker).info
+    except Exception:
+        return {}
+    return {
+        "revenue_growth": info.get("revenueGrowth"),
+        "earnings_growth": info.get("earningsGrowth"),
+        "profit_margin": info.get("profitMargins"),
+        "operating_margin": info.get("operatingMargins"),
+        "roe": info.get("returnOnEquity"),
+        "free_cash_flow": info.get("freeCashflow"),
+        "debt_to_equity": info.get("debtToEquity"),
+        "current_ratio": info.get("currentRatio"),
+        "forward_pe": info.get("forwardPE"),
+        "market_cap": info.get("marketCap"),
+    }
+
+
+def quality_score(f: dict) -> float:
+    """Business-quality score, separate from price/timing."""
+    parts = [
+        _fundamental_component(f.get("revenue_growth"), good=0.05, excellent=0.15, bad=-0.10),
+        _fundamental_component(f.get("earnings_growth"), good=0.05, excellent=0.20, bad=-0.15),
+        _fundamental_component(f.get("profit_margin"), good=0.08, excellent=0.20, bad=-0.05),
+        _fundamental_component(f.get("operating_margin"), good=0.10, excellent=0.25, bad=0.0),
+        _fundamental_component(f.get("roe"), good=0.10, excellent=0.20, bad=-0.05),
+        _fundamental_component(f.get("free_cash_flow"), good=0.0, excellent=1.0, bad=-1.0),
+        _fundamental_component(f.get("debt_to_equity"), good=50.0, excellent=25.0, bad=200.0, reverse=True),
+        _fundamental_component(f.get("current_ratio"), good=1.0, excellent=2.0, bad=0.5),
+    ]
+    return round(float(np.mean(parts)), 1)
+
+
 def analyze(ticker: str, catalyst_days: Optional[int]) -> Optional[dict]:
     df = fetch_history(ticker)
     if df is None or len(df) < 60:
@@ -106,8 +167,16 @@ def analyze(ticker: str, catalyst_days: Optional[int]) -> Optional[dict]:
 
     ma50 = close.rolling(50).mean()
     ma200 = close.rolling(200).mean()
+    ema20 = close.ewm(span=20, adjust=False).mean()
+    ema50 = close.ewm(span=50, adjust=False).mean()
     ma50_now = float(ma50.iloc[-1])
     ma200_now = float(ma200.iloc[-1]) if len(close) >= 200 else float("nan")
+    ema20_now = float(ema20.iloc[-1])
+    ema50_now = float(ema50.iloc[-1])
+    vs_ema20 = (price / ema20_now - 1) * 100
+    vs_ema50 = (price / ema50_now - 1) * 100
+    ema20_rising = ema20.iloc[-1] > ema20.iloc[-6]
+    ema50_rising = ema50.iloc[-1] > ema50.iloc[-6]
 
     returns = {label: pct_change_over(close, days) for label, days in RETURN_WINDOWS.items()}
 
@@ -124,6 +193,33 @@ def analyze(ticker: str, catalyst_days: Optional[int]) -> Optional[dict]:
     rel_volume = float(volume.iloc[-1] / avg_vol_20d) if avg_vol_20d else float("nan")
 
     vol_20d = float(close.pct_change().tail(20).std() * np.sqrt(252) * 100)
+
+    # --- EMA timing / pullback zone ---
+    if price > ma200_now and ema50_rising and ema50_now > ma200_now:
+        if -6 <= vs_ema50 <= 3:
+            ema_zone = "IDEAL_EMA50"
+            ema_timing = 100.0
+        elif -8 <= vs_ema20 <= 2:
+            ema_zone = "EMA20_PULLBACK"
+            ema_timing = 90.0
+        elif vs_ema50 > 12:
+            ema_zone = "EXTENDED"
+            ema_timing = 35.0
+        else:
+            ema_zone = "TREND"
+            ema_timing = 65.0
+    elif price > ma200_now and vs_ema50 < 0:
+        ema_zone = "DEEP_PULLBACK"
+        ema_timing = 75.0 if ema50_rising else 55.0
+    elif price > ma200_now:
+        ema_zone = "RECOVERY"
+        ema_timing = 60.0
+    else:
+        ema_zone = "BELOW_200"
+        ema_timing = 20.0
+
+    fundamentals = fetch_fundamentals(ticker)
+    quality = quality_score(fundamentals)
 
     # --- Trend (30) ---
     trend = 0
@@ -157,7 +253,13 @@ def analyze(ticker: str, catalyst_days: Optional[int]) -> Optional[dict]:
             catalyst_bonus = 8
         elif catalyst_days <= 30:
             catalyst_bonus = 5
-    final_score = min(100, technical_score + catalyst_bonus)
+    # The scanner now separates company quality from market timing.
+    # Quality matters, but a great company at an extended price is still a WAIT.
+    timing_score = min(100.0, max(0.0, 0.55 * technical_score + 0.45 * ema_timing))
+    final_score = min(
+        100,
+        round(0.35 * quality + 0.40 * timing_score + 0.15 * technical_score + 0.10 * min(100, catalyst_bonus * 10), 1),
+    )
 
     situation = classify(
         trend_score=trend,
@@ -177,6 +279,14 @@ def analyze(ticker: str, catalyst_days: Optional[int]) -> Optional[dict]:
         "returns": returns,
         "vs_50ma": vs_50ma,
         "vs_200ma": vs_200ma,
+        "ema20": ema20_now,
+        "ema50": ema50_now,
+        "vs_ema20": vs_ema20,
+        "vs_ema50": vs_ema50,
+        "ema_zone": ema_zone,
+        "ema_timing_score": round(ema_timing, 1),
+        "quality_score": quality,
+        "fundamentals": fundamentals,
         "rel_volume": rel_volume,
         "technical_score": technical_score,
         "catalyst_bonus": catalyst_bonus,
