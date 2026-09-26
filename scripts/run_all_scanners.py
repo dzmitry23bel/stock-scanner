@@ -429,10 +429,10 @@ def print_results(all_signals: dict) -> None:
         if all_signals.get("master_entry"):
             console.print("[bold magenta]🏆 MASTER ENTRY SCORE[/bold magenta] (cross-scanner ranking)")
             table = Table(show_header=True, header_style="bold")
-            for col in ("Ticker", "Score", "Status", "Agreement", "R:R", "Analyst", "Entry", "Stop", "TP1", "TP2"):
+            for col in ("Ticker", "Score", "Status", "Jev", "Jev Conf.", "Agreement", "R:R", "Analyst", "Entry", "Stop", "TP1", "TP2"):
                 table.add_column(col, justify="right" if col not in ("Ticker", "Status") else "left")
             for signal in all_signals["master_entry"][:15]:
-                table.add_row(signal["ticker"], f'{signal["score"]:.1f}', signal["signal"], f'{signal.get("agreement", 0):.0f}%', f'{signal.get("rr", 0):.1f}', "-" if signal.get("analyst_upside_pct") is None else f'{signal["analyst_upside_pct"]:+.0f}%', format_level(signal.get("entry")), format_level(signal.get("stop")), format_level(signal.get("tp1")), format_level(signal.get("tp2")))
+                table.add_row(signal["ticker"], f'{signal["score"]:.1f}', signal["signal"], signal.get("jev_setup", "-"), "-" if signal.get("jev_confidence") is None else f'{signal["jev_confidence"]:.0%}', f'{signal.get("agreement", 0):.0f}%', f'{signal.get("rr", 0):.1f}', "-" if signal.get("analyst_upside_pct") is None else f'{signal["analyst_upside_pct"]:+.0f}%', format_level(signal.get("entry")), format_level(signal.get("stop")), format_level(signal.get("tp1")), format_level(signal.get("tp2")))
             console.print(table)
         else:
             console.print("[dim]No master entry scores[/dim]")
