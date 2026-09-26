@@ -29,6 +29,11 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Run Jev unit tests
+        run: |
+          pip install pytest
+          pytest -q tests/test_jev_decision.py
+
       - name: Skip outside NYSE schedule
         id: market
         env:
