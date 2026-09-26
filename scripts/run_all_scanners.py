@@ -29,6 +29,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from scanners.master_entry import build_master_scores
 from scanners.analyst_targets import fetch_analyst_targets
+from scanners.gemini_decision import evaluate_candidates
 
 try:
     from rich.console import Console
@@ -427,10 +428,10 @@ def print_results(all_signals: dict) -> None:
         if all_signals.get("master_entry"):
             console.print("[bold magenta]🏆 MASTER ENTRY SCORE[/bold magenta] (cross-scanner ranking)")
             table = Table(show_header=True, header_style="bold")
-            for col in ("Ticker", "Score", "Status", "Agreement", "R:R", "Analyst", "Entry", "Stop", "TP1", "TP2"):
+            for col in ("Ticker", "Score", "Status", "AI", "AI Conf.", "Agreement", "R:R", "Analyst", "Entry", "Stop", "TP1", "TP2"):
                 table.add_column(col, justify="right" if col not in ("Ticker", "Status") else "left")
             for signal in all_signals["master_entry"][:15]:
-                table.add_row(signal["ticker"], f'{signal["score"]:.1f}', signal["signal"], f'{signal.get("agreement", 0):.0f}%', f'{signal.get("rr", 0):.1f}', "-" if signal.get("analyst_upside_pct") is None else f'{signal["analyst_upside_pct"]:+.0f}%', format_level(signal.get("entry")), format_level(signal.get("stop")), format_level(signal.get("tp1")), format_level(signal.get("tp2")))
+                table.add_row(signal["ticker"], f'{signal["score"]:.1f}', signal["signal"], signal.get("ai_setup", "-"), "-" if signal.get("ai_confidence") is None else f'{signal["ai_confidence"]:.0%}', f'{signal.get("agreement", 0):.0f}%', f'{signal.get("rr", 0):.1f}', "-" if signal.get("analyst_upside_pct") is None else f'{signal["analyst_upside_pct"]:+.0f}%', format_level(signal.get("entry")), format_level(signal.get("stop")), format_level(signal.get("tp1")), format_level(signal.get("tp2")))
             console.print(table)
         else:
             console.print("[dim]No master entry scores[/dim]")
@@ -492,6 +493,8 @@ def main():
     parser.add_argument("--catalysts", type=str, help="Path to catalysts JSON file")
     parser.add_argument("--report-dir", type=Path, default=DEFAULT_REPORT_DIR, help="Directory for dated Markdown and JSON reports")
     parser.add_argument("--email", action="store_true", help="Email the HTML report via Gmail SMTP (needs GMAIL_ADDRESS/GMAIL_APP_PASSWORD env vars)")
+    parser.add_argument("--ai", action="store_true", help="Run Gemini as a second-opinion decision layer (requires GEMINI_API_KEY)")
+    parser.add_argument("--ai-top", type=int, default=50, help="Maximum master candidates to send to Gemini")
     
     args = parser.parse_args()
     
@@ -506,6 +509,13 @@ def main():
     
     analyst_targets = fetch_analyst_targets(sorted({signal['ticker'] for signals in all_signals.values() for signal in signals}))
     master_scores = build_master_scores(all_signals, analyst_targets)
+    if args.ai:
+        print(f"Running Gemini AI second-opinion layer on up to {args.ai_top} candidates...", file=sys.stderr)
+        master_scores = evaluate_candidates(
+            master_scores,
+            max_candidates=min(args.ai_top, len(master_scores)),
+        ) + master_scores[min(args.ai_top, len(master_scores)):]
+
     all_signals["master_entry"] = [
         {
             "ticker": row["ticker"], "score": row["master_score"],
@@ -520,6 +530,12 @@ def main():
             "analyst_upside_pct": row.get("analyst_upside_pct"),
             "analyst_score": row.get("analyst_score"),
             "analyst_source": row.get("analyst_source"),
+            "ai_setup": row.get("ai_setup"),
+            "ai_confidence": row.get("ai_confidence"),
+            "ai_quality": row.get("ai_quality"),
+            "ai_review_probability": row.get("ai_review_probability"),
+            "ai_reason": row.get("ai_reason"),
+            "ai_error": row.get("ai_error"),
         }
         for row in master_scores[:args.top]
     ]

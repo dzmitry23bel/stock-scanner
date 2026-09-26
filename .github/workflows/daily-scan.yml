@@ -29,6 +29,11 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Run Gemini unit tests
+        run: |
+          pip install pytest
+          pytest -q tests/test_gemini_decision.py
+
       - name: Skip outside NYSE schedule
         id: market
         env:
@@ -59,7 +64,14 @@ jobs:
           GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           REPORT_RECIPIENT: ${{ secrets.REPORT_RECIPIENT }}
-        run: python scripts/run_all_scanners.py --top 50 --report-dir reports/ci --email
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          if [ -n "$GEMINI_API_KEY" ]; then
+            python scripts/run_all_scanners.py --top 50 --ai --ai-top 50 --report-dir reports/ci --email
+          else
+            echo "GEMINI_API_KEY is not configured; running deterministic scanner only."
+            python scripts/run_all_scanners.py --top 50 --report-dir reports/ci --email
+          fi
 
       - name: Publish dated report
         if: steps.market.outputs.should_run == 'true'
