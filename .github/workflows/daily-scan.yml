@@ -29,10 +29,10 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run Jev unit tests
+      - name: Run Gemini unit tests
         run: |
           pip install pytest
-          pytest -q tests/test_jev_decision.py
+          pytest -q tests/test_gemini_decision.py
 
       - name: Skip outside NYSE schedule
         id: market
@@ -64,12 +64,12 @@ jobs:
           GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           REPORT_RECIPIENT: ${{ secrets.REPORT_RECIPIENT }}
-          JEV_API_KEY: ${{ secrets.JEV_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          if [ -n "$JEV_API_KEY" ]; then
-            python scripts/run_all_scanners.py --top 50 --jev --jev-top 50 --report-dir reports/ci --email
+          if [ -n "$GEMINI_API_KEY" ]; then
+            python scripts/run_all_scanners.py --top 50 --ai --ai-top 50 --report-dir reports/ci --email
           else
-            echo "JEV_API_KEY is not configured; running deterministic scanner only."
+            echo "GEMINI_API_KEY is not configured; running deterministic scanner only."
             python scripts/run_all_scanners.py --top 50 --report-dir reports/ci --email
           fi
 
