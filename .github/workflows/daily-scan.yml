@@ -59,7 +59,14 @@ jobs:
           GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           REPORT_RECIPIENT: ${{ secrets.REPORT_RECIPIENT }}
-        run: python scripts/run_all_scanners.py --top 50 --report-dir reports/ci --email
+          JEV_API_KEY: ${{ secrets.JEV_API_KEY }}
+        run: |
+          if [ -n "$JEV_API_KEY" ]; then
+            python scripts/run_all_scanners.py --top 50 --jev --jev-top 50 --report-dir reports/ci --email
+          else
+            echo "JEV_API_KEY is not configured; running deterministic scanner only."
+            python scripts/run_all_scanners.py --top 50 --report-dir reports/ci --email
+          fi
 
       - name: Publish dated report
         if: steps.market.outputs.should_run == 'true'
