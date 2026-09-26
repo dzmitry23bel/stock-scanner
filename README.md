@@ -80,20 +80,21 @@ python scripts/run_all_scanners.py --catalysts config/catalysts.json
 
 `--top` controls the number of results retained from each strategy. The report displays up to 15 rows per strategy so the terminal remains readable.
 
-### Jev decision layer (optional)
+### Gemini AI decision layer (optional)
 
-The master scanner can optionally send each top master candidate to Jev (TypeSafe AI) for a structured second opinion. Jev returns a typed setup classification (ENTRY, SETUP, WATCH, AVOID), probabilities, a quality score, and a review probability. The deterministic scanner rules remain authoritative: Jev does not change the master score, Entry/Stop/TP levels, or hard R:R gates.
+The master scanner can optionally send each top master candidate to Google Gemini for a structured second opinion. Gemini returns an actionable classification (ENTRY, SETUP, WATCH, AVOID), confidence, quality, review probability, and a short reason. The deterministic scanner rules remain authoritative: Gemini does not change the master score, Entry/Stop/TP levels, or hard R:R gates.
 
-Jev is called only when --jev is supplied and a TypeSafe API key is configured. The integration uses the official `TYPESAFE_API_KEY` environment variable; `JEV_API_KEY` remains supported as a backward-compatible fallback. The API key must be stored as an environment variable or GitHub Actions secret, never committed to the repository. The current integration uses TypeSafe's POST /v1/systemone endpoint.
+The integration uses the official `GEMINI_API_KEY` environment variable. The default model is `gemini-2.5-flash`, which has a free tier in the Gemini API. The API key can be created in Google AI Studio. urlGoogle AI Studiohttps://aistudio.google.com/
 
 ```bash
-export TYPESAFE_API_KEY="your-key"
-python scripts/run_all_scanners.py --top 50 --jev --jev-top 50
+export GEMINI_API_KEY="your-key"
+python scripts/run_all_scanners.py --top 50 --ai --ai-top 50
 ```
 
-For GitHub Actions, the current workflow still reads the existing `JEV_API_KEY` repository secret for backward compatibility. Put your TypeSafe API key in that secret, or update the workflow secret mapping to `TYPESAFE_API_KEY`. If the secret is absent, the daily workflow automatically runs the deterministic scanner without Jev.
+For GitHub Actions, add `GEMINI_API_KEY` under repository Settings -> Secrets and variables -> Actions. If the secret is absent, the daily workflow automatically runs the deterministic scanner without Gemini.
 
-The Jev output is stored in the JSON report and shown in the master terminal table. A Jev outage fails open so the normal scanner report is still generated.
+The Gemini output is stored in the JSON report and shown in the master terminal table. An API outage fails open so the normal scanner report is still generated.
+
 
 ## Configuration
 
