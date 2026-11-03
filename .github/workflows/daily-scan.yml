@@ -1,10 +1,7 @@
 name: Daily Market Scan
 
 on:
-  schedule:
-    # 10:30 America/New_York. GitHub cron is UTC, so both DST slots are listed.
-    - cron: "30 14 * * 1-5"
-    - cron: "30 15 * * 1-5"
+  # Automatic scheduled runs are disabled. Reports can still be generated manually.
   workflow_dispatch:
 
 permissions:
@@ -66,14 +63,8 @@ jobs:
           GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           REPORT_RECIPIENT: ${{ secrets.REPORT_RECIPIENT }}
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          if [ -n "$GEMINI_API_KEY" ]; then
-            python scripts/run_all_scanners.py --top 50 --ai --ai-top 50 --report-dir reports/ci --email
-          else
-            echo "GEMINI_API_KEY is not configured; running deterministic scanner only."
-            python scripts/run_all_scanners.py --top 50 --report-dir reports/ci --email
-          fi
+          python scripts/run_all_scanners.py --top 50 --report-dir reports/ci --email
 
       - name: Publish dated report
         if: steps.market.outputs.should_run == 'true'
