@@ -29,7 +29,6 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from scanners.master_entry import build_master_scores
 from scanners.analyst_targets import fetch_analyst_targets
-from scanners.gemini_decision import evaluate_candidates
 
 try:
     from rich.console import Console
@@ -498,8 +497,6 @@ def main():
     parser.add_argument("--catalysts", type=str, help="Path to catalysts JSON file")
     parser.add_argument("--report-dir", type=Path, default=DEFAULT_REPORT_DIR, help="Directory for dated Markdown and JSON reports")
     parser.add_argument("--email", action="store_true", help="Email the HTML report via Gmail SMTP (needs GMAIL_ADDRESS/GMAIL_APP_PASSWORD env vars)")
-    parser.add_argument("--ai", action="store_true", help="Run Gemini as a second-opinion decision layer (requires GEMINI_API_KEY)")
-    parser.add_argument("--ai-top", type=int, default=50, help="Maximum master candidates to send to Gemini")
     
     args = parser.parse_args()
     
@@ -514,12 +511,6 @@ def main():
     
     analyst_targets = fetch_analyst_targets(sorted({signal['ticker'] for signals in all_signals.values() for signal in signals}))
     master_scores = build_master_scores(all_signals, analyst_targets)
-    if args.ai:
-        print(f"Running Gemini AI second-opinion layer on up to {args.ai_top} candidates...", file=sys.stderr)
-        master_scores = evaluate_candidates(
-            master_scores,
-            max_candidates=min(args.ai_top, len(master_scores)),
-        ) + master_scores[min(args.ai_top, len(master_scores)):]
 
     all_signals["master_entry"] = [
         {
